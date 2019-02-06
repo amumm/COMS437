@@ -43,6 +43,7 @@ namespace Pong
         float ballSpeed;
 
         bool colliding = false;
+        bool reset = false;
 
         Random rand = new Random();
         
@@ -127,6 +128,13 @@ namespace Pong
                 Exit();
 
             // TODO: Add your update logic here
+
+            if (reset)
+            {
+                reset = false;
+                System.Threading.Thread.Sleep(600);
+
+            }
 
             // Handle Player Input
             var kstate = Keyboard.GetState();
@@ -252,7 +260,7 @@ namespace Pong
             }
 
             ballDirection = new Vector2((float)rand.NextDouble() * xDir, (float)rand.NextDouble() * yDir);
-            System.Threading.Thread.Sleep(200);
+            reset = true;
         }
 
     }
