@@ -42,11 +42,14 @@ namespace Pong
         float ballOffset;
         float ballSpeed;
 
+
+        float resetInterval = 600.0f;
+        float timeSinceReset = 0.0f;
         bool colliding = false;
         bool reset = false;
 
         Random rand = new Random();
-        
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -65,16 +68,9 @@ namespace Pong
             windowHeight = graphics.PreferredBackBufferHeight;
             windowWidth = graphics.PreferredBackBufferWidth;
             ballPosition = new Vector2(windowWidth / 2, windowHeight / 2);
-            float xDir = -1.2f;
-            float yDir = -1.2f;
-            if (rand.Next(-1, 2) > 0) {
-                xDir = 1.2f;
-            }
-            if(rand.Next(-1, 2) > 0) {
-                yDir = 1.2f;
-            }
 
-            ballDirection = new Vector2((float)rand.NextDouble() * xDir, (float)rand.NextDouble() * yDir);
+            setBallDirection();
+
             ballSpeed = 500f;
 
             player1Position = new Vector2(50, windowHeight / 2);
@@ -131,81 +127,96 @@ namespace Pong
 
             if (reset)
             {
-                reset = false;
-                System.Threading.Thread.Sleep(600);
-
+                timeSinceReset += gameTime.ElapsedGameTime.Milliseconds;
+                if (timeSinceReset > resetInterval)
+                {
+                    reset = false;
+                    timeSinceReset = 0.0f;
+                } 
             }
 
             // Handle Player Input
             var kstate = Keyboard.GetState();
+            var gamePadOneState = GamePad.GetState(PlayerIndex.One);
+            var gamePadTwoState = GamePad.GetState(PlayerIndex.Two);
 
             float playerMovement = playerSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (kstate.IsKeyDown(Keys.W))
+            if (kstate.IsKeyDown(Keys.W) || gamePadOneState.ThumbSticks.Left.Y > 0.0f || gamePadOneState.ThumbSticks.Right.Y > 0.0f)
                 player1Position.Y -= playerMovement;
 
-            if (kstate.IsKeyDown(Keys.S))
+            if (kstate.IsKeyDown(Keys.S) || gamePadOneState.ThumbSticks.Left.Y < 0.0f || gamePadOneState.ThumbSticks.Right.Y < 0.0f)
                 player1Position.Y += playerMovement;
 
-            if (kstate.IsKeyDown(Keys.Up))
+            if (kstate.IsKeyDown(Keys.Up) || gamePadTwoState.ThumbSticks.Left.Y > 0.0f || gamePadTwoState.ThumbSticks.Right.Y > 0.0f)
                 player2Position.Y -= playerMovement;
 
-            if (kstate.IsKeyDown(Keys.Down))
+            if (kstate.IsKeyDown(Keys.Down) || gamePadTwoState.ThumbSticks.Left.Y < 0.0f || gamePadTwoState.ThumbSticks.Right.Y < 0.0f)
                 player2Position.Y += playerMovement;
 
             player1Position.Y = Math.Min(Math.Max(paddleTexture.Height / 2, player1Position.Y), graphics.PreferredBackBufferHeight - paddleTexture.Height / 2);
             player2Position.Y = Math.Min(Math.Max(paddleTexture.Height / 2, player2Position.Y), graphics.PreferredBackBufferHeight - paddleTexture.Height / 2);
 
-            // Handle Ball Movement
-            if (ballPosition.X - ballOffset <= player1Position.X + playerWidthOffset)
+            if (!reset)
             {
-                if (ballPosition.Y >= player1Position.Y - playerHeightOffset && ballPosition.Y <= player1Position.Y + playerHeightOffset)
+                // Handle Ball Movement
+                if (ballPosition.X - ballOffset <= player1Position.X + playerWidthOffset)
                 {
-                    if (!colliding)
+                    if (ballPosition.Y >= player1Position.Y - playerHeightOffset && ballPosition.Y <= player1Position.Y + playerHeightOffset)
                     {
-                        ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitX);
-                        boop.Play();
-                        colliding = true;
-                    } 
-                }
-            } else if (ballPosition.X + ballOffset >= player2Position.X - playerWidthOffset)
-            {
-                if (ballPosition.Y >= player2Position.Y - playerHeightOffset && ballPosition.Y <= player2Position.Y + playerHeightOffset)
-                {
-                    if (!colliding)
-                    {
-                        ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitX);
-                        boop.Play();
-                        colliding = true;
+                        if (!colliding)
+                        {
+                            ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitX);
+                            boop.Play();
+                            colliding = true;
+                        }
                     }
                 }
-            } else
-            {
-                colliding = false;
+                else if (ballPosition.X + ballOffset >= player2Position.X - playerWidthOffset)
+                {
+                    if (ballPosition.Y >= player2Position.Y - playerHeightOffset && ballPosition.Y <= player2Position.Y + playerHeightOffset)
+                    {
+                        if (!colliding)
+                        {
+                            ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitX);
+                            boop.Play();
+                            colliding = true;
+                        }
+                    }
+                }
+                else
+                {
+                    colliding = false;
+                }
+
+                if (ballPosition.Y - ballOffset <= 0.0f)
+                {
+                    ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitY);
+                }
+                else if (ballPosition.Y + ballOffset >= windowHeight)
+                {
+                    ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitY);
+                }
+
+
+                if (ballPosition.X - ballOffset <= 0.0f)
+                {
+                    player2Score++;
+                    resetBall();
+                }
+                else if (ballPosition.X + ballOffset >= windowWidth)
+                {
+                    player1Score++;
+                    resetBall();
+                }
+                else
+                {
+                    ballPosition += ballDirection * ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                    ballPosition.X = Math.Min(Math.Max(ballTexture.Width / 2, ballPosition.X), graphics.PreferredBackBufferWidth - ballTexture.Width / 2);
+                    ballPosition.Y = Math.Min(Math.Max(ballTexture.Height / 2, ballPosition.Y), graphics.PreferredBackBufferHeight - ballTexture.Height / 2);
+                }
             }
-
-            if (ballPosition.Y - ballOffset <= 0.0f)
-            {
-                ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitY);
-            } else if (ballPosition.Y + ballOffset >= windowHeight)
-            {
-                ballDirection = Vector2.Reflect(ballDirection, Vector2.UnitY);
-            } else if (ballPosition.X - ballOffset <= 0.0f)
-            {
-                player2Score++;
-                resetBall();
-            }
-            else if (ballPosition.X + ballOffset >= windowWidth) {
-                player1Score++;
-                resetBall();
-            }
-
-
-            ballPosition += ballDirection * ballSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            ballPosition.X = Math.Min(Math.Max(ballTexture.Width / 2, ballPosition.X), graphics.PreferredBackBufferWidth - ballTexture.Width / 2);
-            ballPosition.Y = Math.Min(Math.Max(ballTexture.Height / 2, ballPosition.Y), graphics.PreferredBackBufferHeight - ballTexture.Height / 2);
-
             base.Update(gameTime);
         }
 
@@ -238,7 +249,7 @@ namespace Pong
             spriteBatch.End();
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(player2ScoreText, "Player 2 Score: " + player2Score, new Vector2((windowWidth / 2) + 75 , 50), Color.Black);
+            spriteBatch.DrawString(player2ScoreText, "Player 2 Score: " + player2Score, new Vector2((windowWidth / 2) + 75, 50), Color.Black);
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -248,20 +259,27 @@ namespace Pong
         {
             ballPosition.X = windowWidth / 2;
             ballPosition.Y = windowHeight / 2;
+
+            setBallDirection();
+
+            reset = true;
+        }
+
+        private void setBallDirection()
+        {
             float xDir = -1.0f;
-            float yDir = -1.0f;
             if (rand.Next(-1, 2) > 0)
             {
                 xDir = 1.0f;
             }
-            if (rand.Next(-1, 2) > 0)
-            {
-                yDir = 1.0f;
-            }
 
-            ballDirection = new Vector2((float)rand.NextDouble() * xDir, (float)rand.NextDouble() * yDir);
-            reset = true;
+            float yMin = -1.0f;
+            float yMax = 1.0f;
+
+            float yDir = (float)rand.NextDouble() * (yMax - yMin) + yMin;
+
+            ballDirection = new Vector2(xDir, yDir);
+            ballDirection.Normalize();
         }
-
     }
 }

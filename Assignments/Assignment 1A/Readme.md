@@ -1,0 +1,2 @@
+The controls for the users are W and S for for Player 1 on the keyboard and Up and Down Arrow for Player 2 on the keyboard. 
+The controls on a gamepad are up and down on either toggle to move the paddle up and down respectively.
