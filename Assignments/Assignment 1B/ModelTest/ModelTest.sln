@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelTest", "ModelTest\ModelTest.csproj", "{677D82F7-9E92-4E07-868B-304E2A14C0FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{677D82F7-9E92-4E07-868B-304E2A14C0FF}.Debug|x86.ActiveCfg = Debug|x86
+		{677D82F7-9E92-4E07-868B-304E2A14C0FF}.Debug|x86.Build.0 = Debug|x86
+		{677D82F7-9E92-4E07-868B-304E2A14C0FF}.Release|x86.ActiveCfg = Release|x86
+		{677D82F7-9E92-4E07-868B-304E2A14C0FF}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9DB8EABE-5E1E-470C-9000-062112444DA1}
+	EndGlobalSection
+EndGlobal
