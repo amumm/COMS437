@@ -11,7 +11,10 @@ namespace Asteroid
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
+
+        // The game's background
+        private StarBackground mainBackground;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -39,6 +42,10 @@ namespace Asteroid
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            mainBackground = new StarBackground();
+            Texture2D background = Content.Load<Texture2D>("mainBackground");
+            mainBackground.Load(GraphicsDevice, background);
 
             // TODO: use this.Content to load your game content here
         }
@@ -76,6 +83,10 @@ namespace Asteroid
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+
+            spriteBatch.Begin();
+            mainBackground.Draw(spriteBatch);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
