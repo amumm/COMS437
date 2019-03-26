@@ -7,17 +7,24 @@ namespace Asteroid
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class Main : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Model skybox;
+        Vector3 modelPosition;
+        Vector3 cameraPosition;
+        float rotation;
 
-        // The game's background
-        private StarBackground mainBackground;
+        float windowHeight;
+        float windowWidth;
+        float aspectRatio;
 
-        public Game1()
+        public Main()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
+
             Content.RootDirectory = "Content";
         }
 
@@ -29,7 +36,11 @@ namespace Asteroid
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            modelPosition = Vector3.Zero;
+            cameraPosition = new Vector3(0, 0, 0.1f);
+            windowHeight = graphics.PreferredBackBufferHeight;
+            windowWidth = graphics.PreferredBackBufferWidth;
+            aspectRatio = windowWidth / windowHeight;
 
             base.Initialize();
         }
@@ -43,9 +54,7 @@ namespace Asteroid
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            mainBackground = new StarBackground();
-            Texture2D background = Content.Load<Texture2D>("mainBackground");
-            mainBackground.Load(GraphicsDevice, background);
+            skybox = Content.Load<Model>("skybox");
 
             // TODO: use this.Content to load your game content here
         }
@@ -69,7 +78,7 @@ namespace Asteroid
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            rotation += 0.005f;
 
             base.Update(gameTime);
         }
@@ -80,14 +89,22 @@ namespace Asteroid
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Yellow);
 
-            // TODO: Add your drawing code here
-
-            spriteBatch.Begin();
-            mainBackground.Draw(spriteBatch);
-            spriteBatch.End();
-
+            Matrix world = Matrix.CreateScale(1.0f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
+            Matrix view = Matrix.CreateLookAt(cameraPosition, modelPosition, Vector3.UnitY);
+            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), aspectRatio, 0.01f, 1000f);
+            foreach (ModelMesh mesh in skybox.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.Alpha = 0.8f;
+                    effect.World = world;
+                    effect.View = view;
+                    effect.Projection = projection;
+                }
+                mesh.Draw();
+            }
             base.Draw(gameTime);
         }
     }

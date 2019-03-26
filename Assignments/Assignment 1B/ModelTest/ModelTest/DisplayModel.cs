@@ -16,9 +16,15 @@ namespace ModelTest
         Vector3 cameraPosition;
         float rotation;
 
+        float windowHeight;
+        float windowWidth;
+        float aspectRatio;
+
         public DisplayModel()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
+
             Content.RootDirectory = "Content";
         }
 
@@ -31,7 +37,11 @@ namespace ModelTest
         protected override void Initialize()
         {
             modelPosition = Vector3.Zero;
-            cameraPosition = new Vector3(0, 0, 100);
+            cameraPosition = new Vector3(0, 0, 0.1f);
+            windowHeight = graphics.PreferredBackBufferHeight;
+            windowWidth = graphics.PreferredBackBufferWidth;
+            aspectRatio = windowWidth / windowHeight;
+
             base.Initialize();
         }
 
@@ -44,7 +54,7 @@ namespace ModelTest
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            m = Content.Load<Model>("asteroid");
+            m = Content.Load<Model>("skybox");
 
             // TODO: use this.Content to load your game content here
         }
@@ -68,7 +78,7 @@ namespace ModelTest
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            rotation += 0.01f;
+            rotation += 0.005f;
 
             base.Update(gameTime);
         }
@@ -80,9 +90,10 @@ namespace ModelTest
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Yellow);
-            Matrix world = Matrix.CreateRotationX(-MathHelper.PiOver2)* Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
+
+            Matrix world = Matrix.CreateScale(1.0f) * Matrix.CreateRotationX(-MathHelper.PiOver2)* Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
             Matrix view = Matrix.CreateLookAt(cameraPosition, modelPosition, Vector3.UnitY);
-            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.01f, 100f);
+            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), aspectRatio, 0.01f, 1000f);
             foreach (ModelMesh mesh in m.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
