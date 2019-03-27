@@ -37,7 +37,7 @@ namespace ModelTest
         protected override void Initialize()
         {
             modelPosition = Vector3.Zero;
-            cameraPosition = new Vector3(0, 0, 0.1f);
+            cameraPosition = new Vector3(0, 0, 100f);
             windowHeight = graphics.PreferredBackBufferHeight;
             windowWidth = graphics.PreferredBackBufferWidth;
             aspectRatio = windowWidth / windowHeight;
@@ -54,7 +54,7 @@ namespace ModelTest
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            m = Content.Load<Model>("skybox");
+            m = Content.Load<Model>("asteroid");
 
             // TODO: use this.Content to load your game content here
         }

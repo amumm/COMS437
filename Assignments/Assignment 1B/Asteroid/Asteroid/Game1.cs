@@ -71,8 +71,8 @@ namespace Asteroid
             // as a DrawableGameComponent as well as add an object into Bepu physics
             // that represents the asteroid.
 
-            new Asteroids(this, new Vector3(-2, 0, -5), 2, new Vector3(0.2f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, new Vector3(2, 0, -5), 3, new Vector3(-0.2f, 0, 0), new Vector3(-0.5f, -0.6f, 0.2f));
+            new Asteroids(this, new Vector3(-5, -5, -50), 2, new Vector3(0.2f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, new Vector3(5, 5, -50), 3, new Vector3(-0.2f, 0, 0), new Vector3(-0.5f, -0.6f, 0.2f));
 
             modelPosition = Vector3.Zero;
 
@@ -135,7 +135,7 @@ namespace Asteroid
         {
             GraphicsDevice.Clear(Color.Yellow);
 
-            Matrix world = Matrix.CreateScale(1.0f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
+            Matrix world = Matrix.CreateScale(10.0f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
             Matrix view = Matrix.CreateLookAt(CameraPosition, modelPosition, Vector3.UnitY);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), aspectRatio, 0.01f, 1000f);
             foreach (ModelMesh mesh in skybox.Meshes)
