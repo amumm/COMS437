@@ -71,53 +71,6 @@
     <Compile Include="BEPU\BEPUik\SingleBoneLinearMotor.cs" />
     <Compile Include="BEPU\BEPUik\SingleBoneRevoluteConstraint.cs" />
     <Compile Include="BEPU\BEPUik\StateControl.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Font\TextDrawer.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\BoundingBoxDrawer.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\ContactDrawer.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayBallSocketJoint.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayDistanceJoint.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayDistanceLimit.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayEllipseSwingLimit.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayLinearAxisLimit.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayPointOnLineJoint.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayPointOnPlaneJoint.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayRevoluteLimit.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplaySingleEntityLinearMotor.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplaySwivelHingeAngularJoint.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayTwistJoint.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Display types\DisplayTwistMotor.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\Line.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\LineDisplayObject.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\LineDisplayObjectBase.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\LineDrawer.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\SimulationIslandDrawer.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Lines\SolverDisplayObject.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\BatchInformation.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\DisplayEntityModel.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\DisplayFluid.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\DisplayInstancedMesh.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\DisplayModel.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\DisplayStaticMesh.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\DisplayTerrain.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\DisplayTriangleMesh.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayBox.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayCapsule.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayCompoundBody.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayCone.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayConvex.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayConvexHull.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayCylinder.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayEntityCollidable.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayMobileMesh.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplaySphere.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\Entity types\DisplayTriangle.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\ModelDisplayObject.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\ModelDisplayObjectBase.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\Display types\SelfDrawingModelDisplayObject.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\InstancedModelDrawer.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\ModelDisplayObjectBatch.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Models\ModelDrawer.cs" />
-    <Compile Include="BEPU\BEPUphysicsDrawer\Properties\AssemblyInfo.cs" />
     <Compile Include="BEPU\BEPUphysics\BroadPhaseEntries\BroadPhaseEntry.cs" />
     <Compile Include="BEPU\BEPUphysics\BroadPhaseEntries\Collidable.cs" />
     <Compile Include="BEPU\BEPUphysics\BroadPhaseEntries\CollidableCollection.cs" />
@@ -515,6 +468,7 @@
     <Compile Include="BEPU\BEPUutilities\Vector4.cs" />
     <Compile Include="BEPU\BEPUutilities\VoronoiRegion.cs" />
     <Compile Include="BEPU\ConversionHelper\MathConverter.cs" />
+    <Compile Include="FighterShip.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -604,14 +558,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="app.manifest" />
-    <None Include="BEPU\BEPUphysicsDrawer\app.config" />
-    <None Include="BEPU\BEPUphysicsDrawer\Content\BEPUphysicsDrawerContent.mgcb" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BEPU\BEPUik\BEPUik.csproj" />
-    <Content Include="BEPU\BEPUphysicsDrawer\BEPUphysicsDrawer.csproj" />
-    <Content Include="BEPU\BEPUphysicsDrawer\Content\InstancedEffect.fx" />
     <Content Include="BEPU\BEPUphysics\BEPUphysics.csproj" />
     <Content Include="BEPU\BEPUutilities\BEPUutilities.csproj" />
   </ItemGroup>

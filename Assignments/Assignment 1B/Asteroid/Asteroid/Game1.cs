@@ -71,8 +71,9 @@ namespace Asteroid
             // as a DrawableGameComponent as well as add an object into Bepu physics
             // that represents the asteroid.
 
-            new Asteroids(this, new Vector3(-5, -5, -50), 2, new Vector3(0.2f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, new Vector3(5, 5, -50), 3, new Vector3(-0.2f, 0, 0), new Vector3(-0.5f, -0.6f, 0.2f));
+            //new Asteroids(this, new Vector3(-7, -5, -50), 2, new Vector3(1.4f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
+            //new Asteroids(this, pos: new Vector3(x: 7, y: 5, z: -50), mass: 3, linMomentum: new Vector3(x: -1.4f, y: 0, z: 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
+            new FighterShip(this, pos: new Vector3(x: 0, y: 5, z: -50), mass: 3);
 
             modelPosition = Vector3.Zero;
 
@@ -133,9 +134,9 @@ namespace Asteroid
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Yellow);
+            GraphicsDevice.Clear(Color.Black);
 
-            Matrix world = Matrix.CreateScale(10.0f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
+            Matrix world = Matrix.CreateScale(100.0f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
             Matrix view = Matrix.CreateLookAt(CameraPosition, modelPosition, Vector3.UnitY);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), aspectRatio, 0.01f, 1000f);
             foreach (ModelMesh mesh in skybox.Meshes)

@@ -5,57 +5,46 @@ using Microsoft.Xna.Framework.Graphics;
 using BEPUphysics;
 using BEPUphysics.Entities.Prefabs;
 using ConversionHelper;
-
+using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Asteroid
 {
-    internal class Asteroids : DrawableGameComponent
+    internal class FighterShip : DrawableGameComponent
     {
 
         private Model model;
         private Sphere physicsObject;
-        private XNA.Vector3 CurrentPosition
+        float yaw = 0f;
+        float pitch = 0f;
+        float roll = 0f;
+        private Vector3 CurrentPosition
         {
             get
             {
                 return MathConverter.Convert(physicsObject.Position);
             }
 
-            set {}
+            set { }
         }
 
-        public Asteroids(Game game) : base(game)
+        public FighterShip(Game game) : base(game)
         {
             game.Components.Add(this);
         }
 
-        public Asteroids(Game game, XNA.Vector3 pos) : this(game)
+        public FighterShip(Game game, Vector3 pos, float mass) : this(game)
         {
-            physicsObject = new BEPUphysics.Entities.Prefabs.Sphere(MathConverter.Convert(pos), 1)
+            physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
                 AngularDamping = 0f,
-                LinearDamping = 0f
+                LinearDamping = 0f,
+                Mass = mass
             };
 
             CurrentPosition = pos;
 
-
             Game.Services.GetService<Space>().Add(physicsObject);
-        }
-
-        public Asteroids(Game game, XNA.Vector3 pos, float mass) : this(game, pos)
-        {
-            physicsObject.Mass = mass;
-        }
-
-        public Asteroids(Game game, XNA.Vector3 pos, float mass, XNA.Vector3 linMomentum) : this(game, pos, mass)
-        {
-            physicsObject.LinearMomentum = MathConverter.Convert(linMomentum);
-        }
-
-        public Asteroids(Game game, XNA.Vector3 pos, float mass, XNA.Vector3 linMomentum, XNA.Vector3 angMomentum) : this(game, pos, mass, linMomentum)
-        {
-            physicsObject.AngularMomentum = MathConverter.Convert(angMomentum);
         }
 
         public override void Initialize()
@@ -78,9 +67,46 @@ namespace Asteroid
 
         public override void Update(GameTime gameTime)
         {
-            //rotation += 0.005f;
-            
+            KeyboardState keyState = Keyboard.GetState();
+
+            if (keyState.IsKeyDown(Keys.A))
+                yaw -= 0.10f;
+
+            if (keyState.IsKeyDown(Keys.D))
+                yaw += 0.10f;
+
+            if (keyState.IsKeyDown(Keys.S))
+                pitch -= 0.10f;
+
+            if (keyState.IsKeyDown(Keys.W))
+                pitch += 0.10f;
+
+            if (keyState.IsKeyDown(Keys.Q))
+                roll -= 0.10f;
+
+            if (keyState.IsKeyDown(Keys.E))
+                roll += 0.10f;
+
+            if (keyState.IsKeyDown(Keys.Space) && keyState.IsKeyDown(Keys.LeftShift))
+            {
+                setPostiotion(-1);
+            }
+            else if (keyState.IsKeyDown(Keys.Space))
+            {
+                setPostiotion(1);
+            }
+
             base.Update(gameTime);
+        }
+
+        private void setPostiotion(int direction)
+        {
+            Vector3 modelVelocityAdd = Vector3.Zero;
+
+            modelVelocityAdd.X = -(float)Math.Sin(yaw) * -(float)Math.Cos(pitch);
+            modelVelocityAdd.Y = -(float)Math.Cos(yaw);
+            modelVelocityAdd.Z = -(float)Math.Sin(pitch) * -(float)Math.Sin(yaw);
+            physicsObject.Position += MathConverter.Convert(modelVelocityAdd) * direction;
         }
 
         public override void Draw(GameTime gameTime)
@@ -96,7 +122,9 @@ namespace Asteroid
                 {
                     effect.Alpha = 0.8f;
 
-                    effect.World = XNA.Matrix.CreateScale(0.25f) * MathConverter.Convert(physicsObject.WorldTransform);
+                    var rotation = Matrix.CreateRotationX(pitch) * Matrix.CreateRotationY(yaw) * Matrix.CreateRotationZ(roll);
+
+                    effect.World = XNA.Matrix.CreateScale(0.25f) * rotation * MathConverter.Convert(physicsObject.WorldTransform);
                     //effect.View = XNA.Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, XNA.Vector3.Up);
                     effect.Projection = XNA.Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
                 }
