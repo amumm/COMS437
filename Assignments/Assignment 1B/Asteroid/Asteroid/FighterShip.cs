@@ -120,7 +120,7 @@ namespace Asteroid
                     var rotation = Matrix.CreateRotationX(pitch) * Matrix.CreateRotationY(yaw) * Matrix.CreateRotationZ(roll);
 
                     effect.World = XNA.Matrix.CreateScale(0.25f) * rotation * MathConverter.Convert(physicsObject.WorldTransform);
-                    //effect.View = XNA.Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, XNA.Vector3.Up);
+                    effect.View = XNA.Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, XNA.Vector3.Up);
                     effect.Projection = XNA.Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
                 }
                 mesh.Draw();
