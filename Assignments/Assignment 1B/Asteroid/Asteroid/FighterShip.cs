@@ -88,13 +88,9 @@ namespace Asteroid
                 roll += 0.10f;
 
             if (keyState.IsKeyDown(Keys.Space) && keyState.IsKeyDown(Keys.LeftShift))
-            {
                 setPostiotion(-1);
-            }
             else if (keyState.IsKeyDown(Keys.Space))
-            {
                 setPostiotion(1);
-            }
 
             base.Update(gameTime);
         }
@@ -103,10 +99,9 @@ namespace Asteroid
         {
             Vector3 modelVelocityAdd = Vector3.Zero;
 
-            modelVelocityAdd.X = -(float)Math.Sin(yaw) * -(float)Math.Cos(pitch);
-            modelVelocityAdd.Y = -(float)Math.Cos(yaw);
-            modelVelocityAdd.Z = -(float)Math.Sin(pitch) * -(float)Math.Sin(yaw);
-            physicsObject.Position += MathConverter.Convert(modelVelocityAdd) * direction;
+            Matrix velocityMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
+
+            physicsObject.Position += MathConverter.Convert(velocityMatrix.Forward) * direction;
         }
 
         public override void Draw(GameTime gameTime)
