@@ -1,5 +1,4 @@
-﻿using XNA = Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using BEPUphysics;
@@ -10,14 +9,16 @@ using System;
 
 namespace Asteroid
 {
-    internal class FighterShip : DrawableGameComponent
+    public class FighterShip : DrawableGameComponent
     {
 
         private Model model;
         private Sphere physicsObject;
-        float yaw = 0f;
-        float pitch = 0f;
-        float roll = 0f;
+
+        private float yaw = 0f;
+        private float pitch = 0f;
+        private float roll = 0f;
+
         private Vector3 CurrentPosition
         {
             get
@@ -54,7 +55,8 @@ namespace Asteroid
 
         protected override void LoadContent()
         {
-            model = Game.Content.Load<Model>("asteroid");
+            //model = Game.Content.Load<Model>("asteroid");
+            model = Game.Content.Load<Model>("ship");
             physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .18f;
 
             base.LoadContent();
@@ -88,40 +90,42 @@ namespace Asteroid
                 roll += 0.10f;
 
             if (keyState.IsKeyDown(Keys.Space) && keyState.IsKeyDown(Keys.LeftShift))
-                setPostiotion(-1);
+                setPosition(-1);
             else if (keyState.IsKeyDown(Keys.Space))
-                setPostiotion(1);
+                setPosition(1);
+
 
             base.Update(gameTime);
         }
 
-        private void setPostiotion(int direction)
+        private void setPosition(int direction)
         {
             Vector3 modelVelocityAdd = Vector3.Zero;
 
             Matrix velocityMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
 
             physicsObject.Position += MathConverter.Convert(velocityMatrix.Forward) * direction;
+
+            Main.CameraDirection = MathConverter.Convert(physicsObject.position);
+
+            var cameraDepthOffset = Vector3.Normalize(Main.CameraDirection) * 1f;
+            var cameraVerticleOffset = Vector3.Up * 1f;
+            Main.CameraPosition = -Vector3.Normalize(Main.CameraDirection) * 200f;
         }
 
         public override void Draw(GameTime gameTime)
         {
-            float aspectRatio = Game.GraphicsDevice.Viewport.AspectRatio;
-            float fieldOfView = XNA.MathHelper.PiOver4;
-            float nearClipPlane = 0.3f;
-            float farClipPlane = 200f;
-
             foreach (var mesh in model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.Alpha = 0.8f;
 
-                    var rotation = Matrix.CreateRotationX(pitch) * Matrix.CreateRotationY(yaw) * Matrix.CreateRotationZ(roll);
+                    var rotation = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
 
-                    effect.World = XNA.Matrix.CreateScale(0.25f) * rotation * MathConverter.Convert(physicsObject.WorldTransform);
-                    effect.View = XNA.Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, XNA.Vector3.Up);
-                    effect.Projection = XNA.Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+                    effect.World = Matrix.CreateScale(0.05f) * rotation * MathConverter.Convert(physicsObject.WorldTransform);
+                    effect.View = Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, Vector3.Up);
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
                 mesh.Draw();
             }

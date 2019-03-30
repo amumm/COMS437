@@ -1,5 +1,4 @@
-﻿using XNA = Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using BEPUphysics;
@@ -14,7 +13,7 @@ namespace Asteroid
 
         private Model model;
         private Sphere physicsObject;
-        private XNA.Vector3 CurrentPosition
+        private Vector3 CurrentPosition
         {
             get
             {
@@ -29,9 +28,9 @@ namespace Asteroid
             game.Components.Add(this);
         }
 
-        public Asteroids(Game game, XNA.Vector3 pos) : this(game)
+        public Asteroids(Game game, Vector3 pos) : this(game)
         {
-            physicsObject = new BEPUphysics.Entities.Prefabs.Sphere(MathConverter.Convert(pos), 1)
+            physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
                 AngularDamping = 0f,
                 LinearDamping = 0f
@@ -43,17 +42,17 @@ namespace Asteroid
             Game.Services.GetService<Space>().Add(physicsObject);
         }
 
-        public Asteroids(Game game, XNA.Vector3 pos, float mass) : this(game, pos)
+        public Asteroids(Game game, Vector3 pos, float mass) : this(game, pos)
         {
             physicsObject.Mass = mass;
         }
 
-        public Asteroids(Game game, XNA.Vector3 pos, float mass, XNA.Vector3 linMomentum) : this(game, pos, mass)
+        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum) : this(game, pos, mass)
         {
             physicsObject.LinearMomentum = MathConverter.Convert(linMomentum);
         }
 
-        public Asteroids(Game game, XNA.Vector3 pos, float mass, XNA.Vector3 linMomentum, XNA.Vector3 angMomentum) : this(game, pos, mass, linMomentum)
+        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : this(game, pos, mass, linMomentum)
         {
             physicsObject.AngularMomentum = MathConverter.Convert(angMomentum);
         }
@@ -78,27 +77,20 @@ namespace Asteroid
 
         public override void Update(GameTime gameTime)
         {
-            //rotation += 0.005f;
-            
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            float aspectRatio = Game.GraphicsDevice.Viewport.AspectRatio;
-            float fieldOfView = XNA.MathHelper.PiOver4;
-            float nearClipPlane = 0.3f;
-            float farClipPlane = 200f;
-
             foreach (var mesh in model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.Alpha = 0.8f;
 
-                    effect.World = XNA.Matrix.CreateScale(0.25f) * MathConverter.Convert(physicsObject.WorldTransform);
-                    //effect.View = XNA.Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, XNA.Vector3.Up);
-                    effect.Projection = XNA.Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+                    effect.World = Matrix.CreateScale(0.25f) * MathConverter.Convert(physicsObject.WorldTransform);
+                    effect.View = Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, Vector3.Up);
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
                 mesh.Draw();
             }

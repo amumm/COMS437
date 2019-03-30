@@ -14,36 +14,62 @@ namespace Asteroid
         SpriteBatch spriteBatch;
 
         // The star background of the game
-        Model skybox;
+        private Model skyboxModel;
 
+        // The location of the skybox in the world
+        private Vector3 skyboxPosition;
 
-        Vector3 modelPosition;
+        // The size of the skybox and consequently the playable world
+        private static float skyboxSize;
 
         // The location of the camera in the world
-        public static Vector3 CameraPosition
-        {
-            get;
-            private set;
-        }
+        public static Vector3 CameraPosition;
 
         // The direction the camera is looking in the world
-        public static Vector3 CameraDirection
+        public static Vector3 CameraDirection;
+
+        // The distance behind the player that the camera is offset
+        private float cameraDepthScaler = 1.0f;
+
+        // The distance above the player that the camera is offset
+        private float cameraHightScaler = 1.0f;
+
+        // The distance to the near view plane
+        public static float NearClipPlane
         {
             get;
             private set;
         }
 
-
-        float rotation;
-
-        // The height of the screen
-        float windowHeight;
-
-        // The width of the screen
-        float windowWidth;
+        // The distance to the far view plane
+        public static float FarClipPlane
+        {
+            get;
+            private set;
+        }
 
         // The aspect ratio for the screen
-        float aspectRatio;
+        public static float AspectRatio
+        {
+            get;
+            private set;
+        }
+
+        // The games field of view
+        public static float FieldOfView
+        {
+            get;
+            private set;
+        }
+
+        // The player
+        public static FighterShip Player
+        {
+            get;
+            private set;
+        }
+
+        private float rotation;
 
         public Main()
         {
@@ -63,26 +89,28 @@ namespace Asteroid
         /// </summary>
         protected override void Initialize()
         {
-
             // Make our BEPU Physics space a service
             Services.AddService<Space>(new Space());
 
-            // Create two asteroids.  Note that asteroids automatically add themselves to
-            // as a DrawableGameComponent as well as add an object into Bepu physics
-            // that represents the asteroid.
-
             //new Asteroids(this, new Vector3(-7, -5, -50), 2, new Vector3(1.4f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
             //new Asteroids(this, pos: new Vector3(x: 7, y: 5, z: -50), mass: 3, linMomentum: new Vector3(x: -1.4f, y: 0, z: 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
-            new FighterShip(this, pos: new Vector3(x: 0, y: 5, z: -50), mass: 3);
+            Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 3);
 
-            modelPosition = Vector3.Zero;
+            skyboxPosition = Vector3.Zero;
+            skyboxSize = 1000f;
 
-            CameraPosition = new Vector3(0, 0, 0.1f);
-            CameraDirection = new Vector3(0, 0, -1);
+            CameraDirection = new Vector3(0, 0, 0);
 
-            windowHeight = graphics.PreferredBackBufferHeight;
-            windowWidth = graphics.PreferredBackBufferWidth;
-            aspectRatio = windowWidth / windowHeight;
+            CameraPosition = new Vector3(0, 200, 300);
+
+            FieldOfView = MathHelper.ToRadians(45);
+
+            NearClipPlane = 0.1f;
+            FarClipPlane = 10000f;
+
+            var windowHeight = graphics.PreferredBackBufferHeight;
+            var windowWidth = graphics.PreferredBackBufferWidth;
+            AspectRatio = windowWidth / windowHeight;
 
             base.Initialize();
         }
@@ -96,9 +124,7 @@ namespace Asteroid
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            skybox = Content.Load<Model>("skybox");
-
-            // TODO: use this.Content to load your game content here
+            skyboxModel = Content.Load<Model>("skybox");
         }
 
         /// <summary>
@@ -136,10 +162,11 @@ namespace Asteroid
         {
             GraphicsDevice.Clear(Color.Black);
 
-            Matrix world = Matrix.CreateScale(100.0f) * Matrix.CreateRotationX(-MathHelper.PiOver2) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(modelPosition);
-            Matrix view = Matrix.CreateLookAt(CameraPosition, modelPosition, Vector3.UnitY);
-            Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), aspectRatio, 0.01f, 1000f);
-            foreach (ModelMesh mesh in skybox.Meshes)
+            //Matrix world = Matrix.CreateScale(skyboxSize) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(skyboxPosition);
+            Matrix world = Matrix.CreateScale(skyboxSize) * Matrix.CreateTranslation(skyboxPosition);
+            Matrix view = Matrix.CreateLookAt(CameraPosition, CameraDirection, Vector3.UnitY);
+            Matrix projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearClipPlane, FarClipPlane);
+            foreach (ModelMesh mesh in skyboxModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
