@@ -125,6 +125,13 @@
 /processorParam:TextureFormat=Color
 /build:reticle.png
 
+#begin shield.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:shield.spritefont
+
 #begin ship.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
