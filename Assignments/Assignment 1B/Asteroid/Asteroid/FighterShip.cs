@@ -11,13 +11,30 @@ namespace Asteroid
 {
     public class FighterShip : DrawableGameComponent
     {
-
+        SpriteBatch spriteBatch;
         private Model model;
         private Sphere physicsObject;
 
-        private float yaw = 0f;
-        private float pitch = 0f;
-        private float roll = 0f;
+        SpriteFont fuelText;
+        private float fuel = 100.0f;
+        private float forwardFuelDepletionRate = 0.1f;
+        private float reverseFuelDepletionRate = 0.05f;
+        private float rotationFuelDepletionRate = 0.01f;
+
+        private float forwardMovementModifier = 1.0f;
+        private float reverseMovementmodifier = -0.5f;
+
+        SpriteFont healthText;
+        private float health = 100.0f;
+
+        SpriteFont torpedoText;
+        private int torpedoeStock = 5;
+
+        private float rotationSpeed = 0.05f;
+
+        float yaw = 0f;
+        float pitch = 0f;
+        float roll = 0f;
 
         private Vector3 CurrentPosition
         {
@@ -28,6 +45,8 @@ namespace Asteroid
 
             set { }
         }
+
+        private Matrix rotationMatrix;
 
         public FighterShip(Game game) : base(game)
         {
@@ -55,9 +74,15 @@ namespace Asteroid
 
         protected override void LoadContent()
         {
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             //model = Game.Content.Load<Model>("asteroid");
             model = Game.Content.Load<Model>("ship");
             physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .18f;
+
+            fuelText = Game.Content.Load<SpriteFont>("fuel");
+            healthText = Game.Content.Load<SpriteFont>("health");
+            torpedoText = Game.Content.Load<SpriteFont>("torpedo");
+            //physicsObject.Radius = 1f;
 
             base.LoadContent();
         }
@@ -71,60 +96,129 @@ namespace Asteroid
         {
             KeyboardState keyState = Keyboard.GetState();
 
+            //float yaw = 0f;
+            //float pitch = 0f;
+            //float roll = 0f;
+
+            if (keyState.IsKeyDown(Keys.F))
+            {
+                shoot();
+            }
+
             if (keyState.IsKeyDown(Keys.A))
-                yaw -= 0.10f;
+            {
+                yaw -= rotationSpeed;
+                //setRotation(yaw, pitch, roll);
+
+            }
 
             if (keyState.IsKeyDown(Keys.D))
-                yaw += 0.10f;
+            {
+                yaw += rotationSpeed;
+                //setRotation(yaw, pitch, roll);
+
+            }
 
             if (keyState.IsKeyDown(Keys.S))
-                pitch -= 0.10f;
+            {
+                pitch -= rotationSpeed;
+                //setRotation(yaw, pitch, roll);
+
+            }
 
             if (keyState.IsKeyDown(Keys.W))
-                pitch += 0.10f;
+            {
+                pitch += rotationSpeed;
+                //setRotation(yaw, pitch, roll);
+
+            }
 
             if (keyState.IsKeyDown(Keys.Q))
-                roll -= 0.10f;
+            {
+                roll -= rotationSpeed;
+                //setRotation(yaw, pitch, roll);
+
+            }
 
             if (keyState.IsKeyDown(Keys.E))
-                roll += 0.10f;
+            {
+                roll += rotationSpeed;
+                //setRotation(yaw, pitch, roll);
+            }
+
+            rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
+
+            //Main.CameraDirection = rotationMatrix.Translation;
+            //Main.CameraPosition = rotationMatrix.Translation + (rotationMatrix.Backward * 300f) + (rotationMatrix.Up * 200f);
+            //Main.CameraUp = Vector3.Normalize(rotationMatrix.Up);
 
             if (keyState.IsKeyDown(Keys.Space) && keyState.IsKeyDown(Keys.LeftShift))
-                setPosition(-1);
+                setPosition(reverseMovementmodifier);
             else if (keyState.IsKeyDown(Keys.Space))
-                setPosition(1);
+                setPosition(forwardMovementModifier);
 
+            //Main.CameraDirection = rotationMatrix.Translation;
+            //Main.CameraPosition = rotationMatrix.Translation + (rotationMatrix.Backward * 300f) + (rotationMatrix.Up * 200f);
+            //Main.CameraUp = Vector3.Normalize(rotationMatrix.Up);
 
             base.Update(gameTime);
         }
 
-        private void setPosition(int direction)
+        private void setRotation(float yaw, float pitch, float roll)
         {
-            Vector3 modelVelocityAdd = Vector3.Zero;
+            fuel -= rotationFuelDepletionRate;
+            rotationMatrix += Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
 
-            Matrix velocityMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
+            Main.CameraDirection = rotationMatrix.Translation;
+            Main.CameraPosition = rotationMatrix.Translation + (rotationMatrix.Backward* 300f) + (rotationMatrix.Up* 200f);
+            Main.CameraUp = Vector3.Normalize(rotationMatrix.Up);
+        }
 
-            physicsObject.Position += MathConverter.Convert(velocityMatrix.Forward) * direction;
+        private void shoot()
+        {
+            torpedoeStock -= 1;
+        }
 
-            Main.CameraDirection = MathConverter.Convert(physicsObject.position);
+        private void setPosition(float direction)
+        {
+            if (direction > 0)
+            {
+                fuel -= forwardFuelDepletionRate;
+                physicsObject.Position += MathConverter.Convert(rotationMatrix.Forward) * direction;
+            }
+            else{
+                fuel -= reverseFuelDepletionRate;
+                physicsObject.Position += MathConverter.Convert(rotationMatrix.Forward) * direction;
 
-            var cameraDepthOffset = Vector3.Normalize(Main.CameraDirection) * 1f;
-            var cameraVerticleOffset = Vector3.Up * 1f;
-            Main.CameraPosition = -Vector3.Normalize(Main.CameraDirection) * 200f;
+            }
+
+            
         }
 
         public override void Draw(GameTime gameTime)
         {
+            spriteBatch.Begin();
+            spriteBatch.DrawString(fuelText, "Fuel: " + fuel.ToString("0.00"), new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 50), Color.AntiqueWhite);
+            spriteBatch.End();
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(healthText, "Health: " + health.ToString("0.00"), new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 100), Color.AntiqueWhite);
+            spriteBatch.End();
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(torpedoText, "Torpedoes: " + torpedoeStock, new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 150), Color.AntiqueWhite);
+            spriteBatch.End();
+
             foreach (var mesh in model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.Alpha = 0.8f;
 
-                    var rotation = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
+                    var worldMatrix = Matrix.CreateScale(0.05f) * rotationMatrix * MathConverter.Convert(physicsObject.WorldTransform);
+                    effect.World = worldMatrix;
 
-                    effect.World = Matrix.CreateScale(0.05f) * rotation * MathConverter.Convert(physicsObject.WorldTransform);
-                    effect.View = Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, Vector3.Up);
+                    effect.View = Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, Main.CameraUp);
                     effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
                 mesh.Draw();

@@ -44,6 +44,13 @@
 /processorParam:TextureFormat=Color
 /build:asteroid_surface.jpg
 
+#begin File.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:File.spritefont;fuel.spritefont
+
 #begin Green Space Skybox.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -55,6 +62,13 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Green Space Skybox.png
+
+#begin health.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:health.spritefont
 
 #begin mainBackground.jpg
 /importer:TextureImporter
@@ -148,6 +162,13 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:skybox.fbx
+
+#begin torpedo.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:torpedo.spritefont
 
 #begin wedge_p1_diff_v1.tga
 /importer:TextureImporter

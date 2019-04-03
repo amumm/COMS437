@@ -28,6 +28,9 @@ namespace Asteroid
         // The direction the camera is looking in the world
         public static Vector3 CameraDirection;
 
+        // The current up direction from the perspective of the player
+        public static Vector3 CameraUp;
+
         // The distance behind the player that the camera is offset
         private float cameraDepthScaler = 1.0f;
 
@@ -57,6 +60,20 @@ namespace Asteroid
 
         // The games field of view
         public static float FieldOfView
+        {
+            get;
+            private set;
+        }
+
+        // The screens height
+        public static float ScreenHeight
+        {
+            get;
+            private set;
+        }
+
+        // The screens width
+        public static float ScreenWidth
         {
             get;
             private set;
@@ -101,16 +118,18 @@ namespace Asteroid
 
             CameraDirection = new Vector3(0, 0, 0);
 
-            CameraPosition = new Vector3(0, 200, 300);
+            CameraPosition = new Vector3(0, 100, 100);
+
+            CameraUp = Vector3.Up;
 
             FieldOfView = MathHelper.ToRadians(45);
 
             NearClipPlane = 0.1f;
             FarClipPlane = 10000f;
 
-            var windowHeight = graphics.PreferredBackBufferHeight;
-            var windowWidth = graphics.PreferredBackBufferWidth;
-            AspectRatio = windowWidth / windowHeight;
+            ScreenHeight = graphics.PreferredBackBufferHeight;
+            ScreenWidth = graphics.PreferredBackBufferWidth;
+            AspectRatio = ScreenWidth / ScreenHeight;
 
             base.Initialize();
         }
@@ -164,7 +183,7 @@ namespace Asteroid
 
             //Matrix world = Matrix.CreateScale(skyboxSize) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(skyboxPosition);
             Matrix world = Matrix.CreateScale(skyboxSize) * Matrix.CreateTranslation(skyboxPosition);
-            Matrix view = Matrix.CreateLookAt(CameraPosition, CameraDirection, Vector3.UnitY);
+            Matrix view = Matrix.CreateLookAt(CameraPosition, CameraDirection, CameraUp);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearClipPlane, FarClipPlane);
             foreach (ModelMesh mesh in skyboxModel.Meshes)
             {
