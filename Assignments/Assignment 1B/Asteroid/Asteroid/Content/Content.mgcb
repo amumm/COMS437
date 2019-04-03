@@ -113,6 +113,18 @@
 /processorParam:TextureFormat=Color
 /build:moonsurface.png
 
+#begin reticle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:reticle.png
+
 #begin ship.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -144,7 +156,7 @@
 /processorParam:TextureFormat=Color
 /build:shipTexture.tga
 
-#begin skybox.fbx
+#begin skybox_2.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -161,7 +173,7 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:skybox.fbx
+/build:skybox_2.fbx
 
 #begin torpedo.spritefont
 /importer:FontDescriptionImporter

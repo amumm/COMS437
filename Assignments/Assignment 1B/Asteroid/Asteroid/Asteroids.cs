@@ -89,7 +89,7 @@ namespace Asteroid
                     effect.Alpha = 0.8f;
 
                     effect.World = Matrix.CreateScale(0.25f) * MathConverter.Convert(physicsObject.WorldTransform);
-                    effect.View = Matrix.CreateLookAt(Main.CameraPosition, Main.CameraDirection, Vector3.Up);
+                    effect.View = Main.View;
                     effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
                 mesh.Draw();

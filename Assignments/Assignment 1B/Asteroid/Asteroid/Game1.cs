@@ -31,6 +31,8 @@ namespace Asteroid
         // The current up direction from the perspective of the player
         public static Vector3 CameraUp;
 
+        public static Matrix View;
+
         // The distance behind the player that the camera is offset
         private float cameraDepthScaler = 1.0f;
 
@@ -109,8 +111,8 @@ namespace Asteroid
             // Make our BEPU Physics space a service
             Services.AddService<Space>(new Space());
 
-            //new Asteroids(this, new Vector3(-7, -5, -50), 2, new Vector3(1.4f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
-            //new Asteroids(this, pos: new Vector3(x: 7, y: 5, z: -50), mass: 3, linMomentum: new Vector3(x: -1.4f, y: 0, z: 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
+            new Asteroids(this, new Vector3(-7, -5, -50), 2, new Vector3(1.4f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, pos: new Vector3(x: 7, y: 5, z: -50), mass: 3, linMomentum: new Vector3(x: -1.4f, y: 0, z: 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
             Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 3);
 
             skyboxPosition = Vector3.Zero;
@@ -121,6 +123,8 @@ namespace Asteroid
             CameraPosition = new Vector3(0, 100, 100);
 
             CameraUp = Vector3.Up;
+
+            View = Matrix.CreateLookAt(CameraPosition, CameraDirection, CameraUp);
 
             FieldOfView = MathHelper.ToRadians(45);
 
@@ -143,7 +147,8 @@ namespace Asteroid
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            skyboxModel = Content.Load<Model>("skybox");
+            //skyboxModel = Content.Load<Model>("skybox");
+            skyboxModel = Content.Load<Model>("skybox_2");
         }
 
         /// <summary>
@@ -183,15 +188,14 @@ namespace Asteroid
 
             //Matrix world = Matrix.CreateScale(skyboxSize) * Matrix.CreateRotationY(rotation) * Matrix.CreateTranslation(skyboxPosition);
             Matrix world = Matrix.CreateScale(skyboxSize) * Matrix.CreateTranslation(skyboxPosition);
-            Matrix view = Matrix.CreateLookAt(CameraPosition, CameraDirection, CameraUp);
             Matrix projection = Matrix.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearClipPlane, FarClipPlane);
             foreach (ModelMesh mesh in skyboxModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.Alpha = 0.8f;
+                    effect.Alpha = 1.0f;
                     effect.World = world;
-                    effect.View = view;
+                    effect.View = View;
                     effect.Projection = projection;
                 }
                 mesh.Draw();
