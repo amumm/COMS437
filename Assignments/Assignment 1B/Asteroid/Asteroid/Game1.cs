@@ -33,6 +33,8 @@ namespace Asteroid
 
         public static Matrix View;
 
+        public static Matrix Translation;
+
         // The distance behind the player that the camera is offset
         private float cameraDepthScaler = 1.0f;
 
@@ -113,7 +115,7 @@ namespace Asteroid
 
             new Asteroids(this, new Vector3(-7, -5, -50), 2, new Vector3(1.4f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
             new Asteroids(this, pos: new Vector3(x: 7, y: 5, z: -50), mass: 3, linMomentum: new Vector3(x: -1.4f, y: 0, z: 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
-            Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 3);
+            Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 0);
 
             skyboxPosition = Vector3.Zero;
             skyboxSize = 1000f;
@@ -125,6 +127,8 @@ namespace Asteroid
             CameraUp = Vector3.Up;
 
             View = Matrix.CreateLookAt(CameraPosition, CameraDirection, CameraUp);
+
+            Translation = Matrix.CreateLookAt(CameraPosition, CameraDirection, CameraUp);
 
             FieldOfView = MathHelper.ToRadians(45);
 

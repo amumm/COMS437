@@ -15,6 +15,9 @@ namespace Asteroid
         private Model model;
         private Sphere physicsObject;
 
+        private Matrix view;
+        private Matrix translation = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
+
         private SpriteFont fuelText;
         private float fuel = 100.0f;
         private float forwardFuelDepletionRate = 0.1f;
@@ -69,8 +72,11 @@ namespace Asteroid
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
                 AngularDamping = 0f,
+                AngularMomentum = new BEPUutilities.Vector3(),
                 LinearDamping = 0f,
+                LinearMomentum = new BEPUutilities.Vector3(),
                 Mass = mass
+
             };
 
             CurrentPosition = pos;
@@ -81,7 +87,7 @@ namespace Asteroid
         public override void Initialize()
         {
             reticlePosition = new Vector2(Main.ScreenWidth / 2, Main.ScreenHeight / 2);
-
+            view = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
             base.Initialize();
         }
 
@@ -233,7 +239,14 @@ namespace Asteroid
             {
                 fuel -= rotationFuelDepletionRate;
                 rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
-                Main.View *= rotationMatrix;
+                //physicsObject.WorldTransform = MathConverter.Convert(rotationMatrix) * physicsObject.WorldTransform;
+                physicsObject.WorldTransform *= MathConverter.Convert(rotationMatrix);
+                view = rotationMatrix * view;
+                //view *= rotationMatrix;
+                //view = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
+
+                //Main.View *= rotationMatrix;
+                //Main.View *= rotationMatrix;
             }
         }
 
@@ -241,21 +254,26 @@ namespace Asteroid
         {
             float direction = 0;
             float fuelDepletion = 0;
+            bool canMove = false;
             if (keyState.IsKeyDown(Keys.Space) && keyState.IsKeyDown(Keys.LeftShift))
             {
+                canMove = true;
                 direction = reverseMovementmodifier;
                 fuelDepletion = reverseFuelDepletionRate;
             }
             else if (keyState.IsKeyDown(Keys.Space))
             {
+                canMove = true;
                 direction = forwardMovementModifier;
                 fuelDepletion = forwardFuelDepletionRate;
             }
 
-            if (fuel - fuelDepletion > 0)
+            if (fuel - fuelDepletion > 0 && canMove)
             {
                 fuel -= fuelDepletion;
-                Main.View *= Matrix.CreateTranslation(0, 0, direction);
+                //Main.View *= Matrix.CreateTranslation(0, 0, direction);
+                //view *= Matrix.CreateTranslation(0, 0, direction) * view;
+                physicsObject.WorldTransform += MathConverter.Convert(Matrix.CreateTranslation(MathConverter.Convert(physicsObject.WorldTransform.Forward)));
             }
         }
 
@@ -287,10 +305,12 @@ namespace Asteroid
                 {
                     effect.Alpha = 0.8f;
 
-                    var worldMatrix = Matrix.CreateScale(0.05f) * Matrix.CreateTranslation(0, 0, 0);
+                    //var worldMatrix = Matrix.CreateScale(0.05f) * Matrix.CreateTranslation(0, 0, 0);
+                    var worldMatrix = Matrix.CreateScale(0.05f) * MathConverter.Convert(physicsObject.WorldTransform);
                     effect.World = worldMatrix;
 
-                    effect.View = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
+                    effect.View = view;
+                    //effect.View = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
                     effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
                 mesh.Draw();
