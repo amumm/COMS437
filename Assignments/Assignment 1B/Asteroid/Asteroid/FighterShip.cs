@@ -40,6 +40,8 @@ namespace Asteroid
         private int torpedoeStock = 5;
         private float torpedoReloadTime = 600.0f;
         private float timeSinceFiring = 0.0f;
+        private Model torpedoModel;
+        private Sphere torpedoPhysicsObject;
 
         private SpriteFont shieldText;
         private bool shieldStatus = false;
@@ -96,6 +98,18 @@ namespace Asteroid
             spriteBatch = new SpriteBatch(GraphicsDevice);
             model = Game.Content.Load<Model>("ship");
             physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .18f;
+
+            torpedoModel = Game.Content.Load<Model>("mothership");
+            torpedoPhysicsObject = new Sphere(MathConverter.Convert(new Vector3(0, 0, 100)), 1)
+            {
+                AngularDamping = 0f,
+                AngularMomentum = new BEPUutilities.Vector3(),
+                LinearDamping = 0f,
+                LinearMomentum = new BEPUutilities.Vector3(),
+                Mass = 4
+
+            };
+            torpedoPhysicsObject.Radius = torpedoModel.Meshes[0].BoundingSphere.Radius * .18f;
 
             fuelText = Game.Content.Load<SpriteFont>("fuel");
             healthText = Game.Content.Load<SpriteFont>("health");
@@ -240,12 +254,12 @@ namespace Asteroid
                 fuel -= rotationFuelDepletionRate;
                 rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
                 //physicsObject.WorldTransform = MathConverter.Convert(rotationMatrix) * physicsObject.WorldTransform;
-                physicsObject.WorldTransform *= MathConverter.Convert(rotationMatrix);
-                view = rotationMatrix * view;
+                //physicsObject.WorldTransform *= MathConverter.Convert(rotationMatrix);
+                //view = rotationMatrix * view;
                 //view *= rotationMatrix;
                 //view = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
 
-                //Main.View *= rotationMatrix;
+                Main.View *= rotationMatrix;
                 //Main.View *= rotationMatrix;
             }
         }
@@ -271,9 +285,9 @@ namespace Asteroid
             if (fuel - fuelDepletion > 0 && canMove)
             {
                 fuel -= fuelDepletion;
-                //Main.View *= Matrix.CreateTranslation(0, 0, direction);
+                Main.View *= Matrix.CreateTranslation(0, 0, direction);
                 //view *= Matrix.CreateTranslation(0, 0, direction) * view;
-                physicsObject.WorldTransform += MathConverter.Convert(Matrix.CreateTranslation(MathConverter.Convert(physicsObject.WorldTransform.Forward)));
+                //physicsObject.WorldTransform *= MathConverter.Convert(Matrix.CreateTranslation(MathConverter.Convert(physicsObject.WorldTransform.Forward)));
             }
         }
 
@@ -299,6 +313,23 @@ namespace Asteroid
             spriteBatch.Draw(reticle, reticlePosition, null, Color.White, 0f, reticleCenter, Vector2.One, SpriteEffects.None, 0f);
             spriteBatch.End();
 
+            foreach (var mesh in torpedoModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.Alpha = 0.8f;
+
+                    var worldMatrix = Matrix.CreateScale(1f) * MathConverter.Convert(torpedoPhysicsObject.WorldTransform);
+                    //var worldMatrix = Matrix.CreateScale(10.0f) * Matrix.CreateTranslation(0, 0, 0);
+                    effect.World = worldMatrix;
+
+                    effect.View = Main.View;
+                    //effect.View = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
+                }
+                mesh.Draw();
+            }
+
             foreach (var mesh in model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
@@ -315,6 +346,8 @@ namespace Asteroid
                 }
                 mesh.Draw();
             }
+
+            
             base.Draw(gameTime);
         }
 
