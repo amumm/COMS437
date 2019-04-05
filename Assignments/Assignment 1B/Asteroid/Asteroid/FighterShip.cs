@@ -23,8 +23,8 @@ namespace Asteroid
         private float rotationFuelDepletionRate = 0.01f;
 
         private float rotationSpeed = 0.02f;
-        private float forwardMovementModifier = 1.0f;
-        private float reverseMovementmodifier = -0.5f;
+        private float forwardMovementModifier = 60.0f;
+        private float reverseMovementmodifier = -30.0f;
 
         private SpriteFont healthText;
         private float health = 100.0f;
@@ -96,7 +96,7 @@ namespace Asteroid
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             model = Game.Content.Load<Model>("ship");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .18f;
+            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .005f;
 
             torpedoModel = Game.Content.Load<Model>("mothership");
             torpedoPhysicsObject = new Sphere(MathConverter.Convert(new Vector3(0, 0, 100)), 1)
@@ -108,7 +108,7 @@ namespace Asteroid
                 Mass = 4
 
             };
-            torpedoPhysicsObject.Radius = torpedoModel.Meshes[0].BoundingSphere.Radius * .18f;
+            torpedoPhysicsObject.Radius = torpedoModel.Meshes[0].BoundingSphere.Radius * .1f;
 
             fuelText = Game.Content.Load<SpriteFont>("fuel");
             healthText = Game.Content.Load<SpriteFont>("health");
@@ -259,6 +259,8 @@ namespace Asteroid
 
         private void setPosition(KeyboardState keyState, GamePadState gamePadState)
         {
+            physicsObject.LinearMomentum *= 0.95f;
+            physicsObject.AngularMomentum *= 0.95f;
             float direction = 0;
             float fuelDepletion = 0;
             bool canMove = false;
@@ -279,8 +281,11 @@ namespace Asteroid
             if (fuel - fuelDepletion > 0 && canMove)
             {
                 fuel -= fuelDepletion;
-                physicsObject.Position += forward * direction;
+                //physicsObject.Position += forward * direction;
+                physicsObject.LinearMomentum += forward * direction;
+                Console.WriteLine(physicsObject.LinearMomentum);
             }
+
             var position = MathConverter.Convert(physicsObject.position + (physicsObject.WorldTransform.Up * 8) + (physicsObject.WorldTransform.Backward * 1));
             var lookDirection = MathConverter.Convert(physicsObject.position + forward * 20);
             var up = MathConverter.Convert(physicsObject.WorldTransform.Up);

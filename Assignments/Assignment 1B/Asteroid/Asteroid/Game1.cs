@@ -99,6 +99,7 @@ namespace Asteroid
                 GraphicsProfile = GraphicsProfile.HiDef
             };
 
+
             Content.RootDirectory = "Content";
         }
 
@@ -113,12 +114,12 @@ namespace Asteroid
             // Make our BEPU Physics space a service
             Services.AddService<Space>(new Space());
 
-            new Asteroids(this, new Vector3(-7, -5, -50), 2, new Vector3(1.4f, 0, 0), new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, pos: new Vector3(x: 7, y: 5, z: -50), mass: 3, linMomentum: new Vector3(x: -1.4f, y: 0, z: 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
+            new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-50f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(50f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
             Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 10);
 
             skyboxPosition = Vector3.Zero;
-            skyboxSize = 1000f;
+            skyboxSize = 100000f;
 
             CameraDirection = new Vector3(0, 0, 0);
 
@@ -133,7 +134,7 @@ namespace Asteroid
             FieldOfView = MathHelper.ToRadians(45);
 
             NearClipPlane = 0.1f;
-            FarClipPlane = 10000f;
+            FarClipPlane = 1000000f;
 
             ScreenHeight = graphics.PreferredBackBufferHeight;
             ScreenWidth = graphics.PreferredBackBufferWidth;
@@ -196,7 +197,14 @@ namespace Asteroid
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.Alpha = 1.0f;
+                    var num = 10;
+                    effect.EnableDefaultLighting();
+                    effect.DirectionalLight0.DiffuseColor = new Vector3(num, num, num);
+                    effect.DirectionalLight1.DiffuseColor = new Vector3(num, num, num);
+                    effect.DirectionalLight2.DiffuseColor = new Vector3(num, num, num);
+                    effect.PreferPerPixelLighting = true;
+
+                    effect.Alpha = 0.5f;
                     effect.World = world;
                     effect.View = View;
                     effect.Projection = projection;

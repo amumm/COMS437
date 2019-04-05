@@ -65,7 +65,7 @@ namespace Asteroid
         protected override void LoadContent()
         {
             model = Game.Content.Load<Model>("asteroid");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .18f;
+            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .2f;
 
             base.LoadContent();
         }
