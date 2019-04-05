@@ -14,12 +14,10 @@ namespace Asteroid
         private SpriteBatch spriteBatch;
         private Model model;
         private Sphere physicsObject;
-
-        private Matrix view;
-        private Matrix translation = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
+        private Vector3 shipPosition;
 
         private SpriteFont fuelText;
-        private float fuel = 100.0f;
+        private float fuel = 10000.0f;
         private float forwardFuelDepletionRate = 0.1f;
         private float reverseFuelDepletionRate = 0.05f;
         private float rotationFuelDepletionRate = 0.01f;
@@ -88,8 +86,9 @@ namespace Asteroid
 
         public override void Initialize()
         {
+            shipPosition = Vector3.Zero;
+            rotationMatrix = Matrix.Identity;
             reticlePosition = new Vector2(Main.ScreenWidth / 2, Main.ScreenHeight / 2);
-            view = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
             base.Initialize();
         }
 
@@ -118,7 +117,6 @@ namespace Asteroid
 
             reticle = Game.Content.Load<Texture2D>("reticle");
             reticleCenter = new Vector2(reticle.Width / 2, reticle.Height / 2);
-
 
             base.LoadContent();
         }
@@ -235,13 +233,13 @@ namespace Asteroid
             float pitch = 0f;
             float roll = 0f;
 
-            if (keyState.IsKeyDown(Keys.A))
-                yaw -= rotationSpeed;
             if (keyState.IsKeyDown(Keys.D))
+                yaw -= rotationSpeed;
+            if (keyState.IsKeyDown(Keys.A))
                 yaw += rotationSpeed;
-            if (keyState.IsKeyDown(Keys.W))
-                pitch -= rotationSpeed;
             if (keyState.IsKeyDown(Keys.S))
+                pitch -= rotationSpeed;
+            if (keyState.IsKeyDown(Keys.W))
                 pitch += rotationSpeed;
             if (keyState.IsKeyDown(Keys.Q))
                 roll -= rotationSpeed;
@@ -252,15 +250,10 @@ namespace Asteroid
                 (yaw != 0 || pitch != 0 || roll != 0))
             {
                 fuel -= rotationFuelDepletionRate;
-                rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
-                //physicsObject.WorldTransform = MathConverter.Convert(rotationMatrix) * physicsObject.WorldTransform;
-                //physicsObject.WorldTransform *= MathConverter.Convert(rotationMatrix);
-                //view = rotationMatrix * view;
-                //view *= rotationMatrix;
-                //view = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
 
-                Main.View *= rotationMatrix;
-                //Main.View *= rotationMatrix;
+                rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
+
+                physicsObject.WorldTransform = MathConverter.Convert(rotationMatrix) * physicsObject.WorldTransform;
             }
         }
 
@@ -282,17 +275,54 @@ namespace Asteroid
                 fuelDepletion = forwardFuelDepletionRate;
             }
 
+            var forward = physicsObject.WorldTransform.Forward;
             if (fuel - fuelDepletion > 0 && canMove)
             {
                 fuel -= fuelDepletion;
-                Main.View *= Matrix.CreateTranslation(0, 0, direction);
-                //view *= Matrix.CreateTranslation(0, 0, direction) * view;
-                //physicsObject.WorldTransform *= MathConverter.Convert(Matrix.CreateTranslation(MathConverter.Convert(physicsObject.WorldTransform.Forward)));
+                physicsObject.Position += forward * direction;
             }
+            var position = MathConverter.Convert(physicsObject.position + (physicsObject.WorldTransform.Up * 8) + (physicsObject.WorldTransform.Backward * 1));
+            var lookDirection = MathConverter.Convert(physicsObject.position + forward * 20);
+            var up = MathConverter.Convert(physicsObject.WorldTransform.Up);
+
+            Main.View = Matrix.CreateLookAt(position, lookDirection, up);
         }
 
         public override void Draw(GameTime gameTime)
         {
+            
+            //foreach (var mesh in torpedoModel.Meshes)
+            //{
+            //    foreach (BasicEffect effect in mesh.Effects)
+            //    {
+            //        effect.Alpha = 0.8f;
+
+            //        var worldMatrix = Matrix.CreateScale(.25f) * MathConverter.Convert(torpedoPhysicsObject.WorldTransform);
+            //        //var worldMatrix = Matrix.CreateScale(10.0f) * Matrix.CreateTranslation(0, 0, 0);
+            //        effect.World = worldMatrix;
+
+            //        effect.View = Main.View;
+            //        //effect.View = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
+            //        effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
+            //    }
+            //    mesh.Draw();
+            //}
+
+            foreach (var mesh in model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.Alpha = 0.8f;
+
+                    var worldMatrix = Matrix.CreateScale(0.01f) * MathConverter.Convert(physicsObject.WorldTransform);
+
+                    effect.World = worldMatrix;
+                    effect.View = Main.View;
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
+                }
+                mesh.Draw();
+            }
+
             spriteBatch.Begin();
             spriteBatch.DrawString(fuelText, "Fuel: " + fuel.ToString("0.00"), new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 50), Color.AntiqueWhite);
             spriteBatch.End();
@@ -313,41 +343,9 @@ namespace Asteroid
             spriteBatch.Draw(reticle, reticlePosition, null, Color.White, 0f, reticleCenter, Vector2.One, SpriteEffects.None, 0f);
             spriteBatch.End();
 
-            foreach (var mesh in torpedoModel.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.Alpha = 0.8f;
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-                    var worldMatrix = Matrix.CreateScale(1f) * MathConverter.Convert(torpedoPhysicsObject.WorldTransform);
-                    //var worldMatrix = Matrix.CreateScale(10.0f) * Matrix.CreateTranslation(0, 0, 0);
-                    effect.World = worldMatrix;
-
-                    effect.View = Main.View;
-                    //effect.View = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
-                }
-                mesh.Draw();
-            }
-
-            foreach (var mesh in model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.Alpha = 0.8f;
-
-                    //var worldMatrix = Matrix.CreateScale(0.05f) * Matrix.CreateTranslation(0, 0, 0);
-                    var worldMatrix = Matrix.CreateScale(0.05f) * MathConverter.Convert(physicsObject.WorldTransform);
-                    effect.World = worldMatrix;
-
-                    effect.View = view;
-                    //effect.View = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
-                }
-                mesh.Draw();
-            }
-
-            
             base.Draw(gameTime);
         }
 
