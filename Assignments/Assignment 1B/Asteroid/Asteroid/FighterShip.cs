@@ -171,7 +171,7 @@ namespace Asteroid
                 }
             }
 
-            if (keyState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Left.X > 0.0f)
+            if (keyState.IsKeyDown(Keys.Left) || gamePadState.ThumbSticks.Left.X < 0.0f)
             {
                 temp.X -= reticleSpeed;
                 if (canMoveReticle(temp))
@@ -180,7 +180,7 @@ namespace Asteroid
                 }
             }
 
-            if (keyState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Left.X < 0.0f)
+            if (keyState.IsKeyDown(Keys.Right) || gamePadState.ThumbSticks.Left.X > 0.0f)
             {
                 temp.X += reticleSpeed;
                 if (canMoveReticle(temp))
@@ -202,7 +202,7 @@ namespace Asteroid
 
         private void shoot(KeyboardState keyState, GamePadState gamePadState)
         {
-            if (keyState.IsKeyDown(Keys.F))
+            if (keyState.IsKeyDown(Keys.F) || gamePadState.IsButtonDown(Buttons.B))
             {
                 if (timeSinceFiring > torpedoReloadTime && torpedoeStock > 0)
                 {
@@ -230,7 +230,7 @@ namespace Asteroid
         private void handleShield(KeyboardState keyState, GamePadState gamePadState)
         {
 
-            if (keyState.IsKeyDown(Keys.Tab))
+            if (keyState.IsKeyDown(Keys.Tab) || gamePadState.IsButtonDown(Buttons.Y))
             {
                 if (timeSinceShieldSwitch > shieldSwitchTime)
                 {
@@ -255,17 +255,17 @@ namespace Asteroid
             float pitch = 0f;
             float roll = 0f;
 
-            if (keyState.IsKeyDown(Keys.D))
+            if (keyState.IsKeyDown(Keys.D) || gamePadState.ThumbSticks.Right.X > 0.0f)
                 yaw -= rotationSpeed;
-            if (keyState.IsKeyDown(Keys.A))
+            if (keyState.IsKeyDown(Keys.A) || gamePadState.ThumbSticks.Right.X < 0.0f)
                 yaw += rotationSpeed;
-            if (keyState.IsKeyDown(Keys.S))
+            if (keyState.IsKeyDown(Keys.S) || gamePadState.ThumbSticks.Right.Y < 0.0f)
                 pitch -= rotationSpeed;
-            if (keyState.IsKeyDown(Keys.W))
+            if (keyState.IsKeyDown(Keys.W) || gamePadState.ThumbSticks.Right.Y > 0.0f)
                 pitch += rotationSpeed;
-            if (keyState.IsKeyDown(Keys.Q))
+            if (keyState.IsKeyDown(Keys.Q) || gamePadState.IsButtonDown(Buttons.LeftShoulder) || gamePadState.IsButtonDown(Buttons.DPadLeft))
                 roll -= rotationSpeed;
-            if (keyState.IsKeyDown(Keys.E))
+            if (keyState.IsKeyDown(Keys.E) || gamePadState.IsButtonDown(Buttons.RightShoulder) || gamePadState.IsButtonDown(Buttons.DPadRight))
                 roll += rotationSpeed;
 
             if (yaw != 0 || pitch != 0 || roll != 0)
@@ -287,13 +287,13 @@ namespace Asteroid
             float direction = 0;
             float fuelDepletion = 0;
             bool canMove = false;
-            if (keyState.IsKeyDown(Keys.Space) && keyState.IsKeyDown(Keys.LeftShift))
+            if ((keyState.IsKeyDown(Keys.Space) && keyState.IsKeyDown(Keys.LeftShift)) || gamePadState.IsButtonDown(Buttons.LeftTrigger))
             {
                 canMove = true;
                 direction = reverseMovementmodifier;
                 fuelDepletion = reverseFuelDepletionRate;
             }
-            else if (keyState.IsKeyDown(Keys.Space))
+            else if ((keyState.IsKeyDown(Keys.Space)) || gamePadState.IsButtonDown(Buttons.RightTrigger))
             {
                 canMove = true;
                 direction = forwardMovementModifier;
