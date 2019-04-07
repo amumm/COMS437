@@ -94,8 +94,9 @@ namespace Asteroid
                         Game.Services.GetService<Space>().Remove(sender.Entity);
                         Game.Components.Remove(senderGameComponent);
                         break;
-                    case "":
-                        Console.WriteLine("Case 2");
+                    case "Mothership":
+                        Game.Services.GetService<Space>().Remove(sender.Entity);
+                        Game.Components.Remove(senderGameComponent);
                         break;
                     default:
                         Console.WriteLine("Hit Unknown Object");

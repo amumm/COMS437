@@ -121,7 +121,8 @@ namespace Asteroid
             // Make our BEPU Physics space a service
             Services.AddService<Space>(new Space());
 
-            new Mothership(this, pos: new Vector3(40, -5, -500), mass: 10000, linMomentum: new Vector3(0, 0, 0), angMomentum: new Vector3(0, 0, 0));
+            new Mothership(this, pos: new Vector3(40, -5, -500), mass: 10000, linMomentum: new Vector3(5000, 10000, -20000), angMomentum: new Vector3(0, 0, 0));
+            new Asteroids(this, pos: new Vector3(300, -5, -450), mass: 200, linMomentum: new Vector3(-2000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
             new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
             new Asteroids(this, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(1000f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
             Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 10);

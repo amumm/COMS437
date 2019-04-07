@@ -57,7 +57,7 @@ namespace Asteroid
         private bool shieldStatus = false;
         private string shieldStatusText = "OFF";
         private float shieldDepletionRate = 0.05f;
-        private float shieldSwitchTime = 100.0f;
+        private float shieldSwitchTime = 200.0f;
         private float timeSinceShieldSwitch = 0.0f;
 
         private Matrix rotationMatrix;
@@ -314,36 +314,40 @@ namespace Asteroid
             //    }
             //    mesh.Draw();
             //}
-
-            foreach (var mesh in model.Meshes)
+            if (!Main.gameLost)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (var mesh in model.Meshes)
                 {
-                    effect.Alpha = 0.8f;
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        effect.Alpha = 0.8f;
 
-                    var worldMatrix = Matrix.CreateScale(modelSizeScaler) * MathConverter.Convert(physicsObject.WorldTransform);
+                        var worldMatrix = Matrix.CreateScale(modelSizeScaler) * MathConverter.Convert(physicsObject.WorldTransform);
 
-                    effect.World = worldMatrix;
-                    effect.View = Main.View;
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
+                        effect.World = worldMatrix;
+                        effect.View = Main.View;
+                        effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
+                    }
+                    mesh.Draw();
                 }
-                mesh.Draw();
             }
 
+            var statusOffset = 160;
+            var statusSpacing = 30;
             spriteBatch.Begin();
-            spriteBatch.DrawString(fuelText, "Fuel: " + fuel.ToString("0.00"), new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 50), Color.AntiqueWhite);
+            spriteBatch.DrawString(fuelText, "Fuel: " + fuel.ToString("0.00"), new Vector2((Main.ScreenWidth) - statusOffset, Main.ScreenHeight - (statusSpacing * 1)), Color.AntiqueWhite);
             spriteBatch.End();
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(healthText, "Health: " + health.ToString("0.00"), new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 100), Color.AntiqueWhite);
+            spriteBatch.DrawString(healthText, "Health: " + health.ToString("0.00"), new Vector2((Main.ScreenWidth) - statusOffset, Main.ScreenHeight - (statusSpacing * 2)), Color.AntiqueWhite);
             spriteBatch.End();
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(torpedoText, "Torpedoes: " + torpedoeStock, new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 150), Color.AntiqueWhite);
+            spriteBatch.DrawString(torpedoText, "Torpedoes: " + torpedoeStock, new Vector2((Main.ScreenWidth) - statusOffset, Main.ScreenHeight - (statusSpacing * 3)), Color.AntiqueWhite);
             spriteBatch.End();
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(shieldText, "Shield: " + shieldStatusText, new Vector2((Main.ScreenWidth) - 110, Main.ScreenHeight - 200), Color.AntiqueWhite);
+            spriteBatch.DrawString(shieldText, "Shield: " + shieldStatusText, new Vector2((Main.ScreenWidth) - statusOffset, Main.ScreenHeight - (statusSpacing * 4)), Color.AntiqueWhite);
             spriteBatch.End();
 
             spriteBatch.Begin();
@@ -378,6 +382,7 @@ namespace Asteroid
                 var otherGameComponent = otherEntityInformation.Entity.Tag as IGameComponent;
                 var otherType = otherGameComponent.GetType().ToString().Substring(9);
 
+                var senderGameComponent = sender.Entity.Tag as IGameComponent;
 
                 Console.WriteLine(otherType);
                 switch (otherType)

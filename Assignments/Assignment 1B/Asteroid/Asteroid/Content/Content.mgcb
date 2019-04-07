@@ -44,12 +44,12 @@
 /processorParam:TextureFormat=Color
 /build:asteroid_surface.jpg
 
-#begin File.spritefont
+#begin fuel.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:File.spritefont;fuel.spritefont
+/build:fuel.spritefont
 
 #begin gameover.spritefont
 /importer:FontDescriptionImporter
