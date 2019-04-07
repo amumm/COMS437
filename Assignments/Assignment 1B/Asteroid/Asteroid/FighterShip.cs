@@ -51,40 +51,23 @@ namespace Asteroid
         private float shieldSwitchTime = 100.0f;
         private float timeSinceShieldSwitch = 0.0f;
 
-
-
-        private Vector3 CurrentPosition
-        {
-            get
-            {
-                return MathConverter.Convert(physicsObject.Position);
-            }
-
-            set { }
-        }
-
         private Matrix rotationMatrix;
 
-        public FighterShip(Game game) : base(game)
-        {
-            game.Components.Add(this);
-        }
-
-        public FighterShip(Game game, Vector3 pos, float mass) : this(game)
+        public FighterShip(Game game, Vector3 pos, float mass) : base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
-                AngularDamping = 0f,
-                AngularMomentum = new BEPUutilities.Vector3(),
-                LinearDamping = 0f,
+                Mass = mass,
                 LinearMomentum = new BEPUutilities.Vector3(),
-                Mass = mass
+                AngularMomentum = new BEPUutilities.Vector3(),
+                AngularDamping = 0f,
+                LinearDamping = 0f,
+                Tag = this
 
             };
 
-            CurrentPosition = pos;
-
-            Game.Services.GetService<Space>().Add(physicsObject);
+            game.Services.GetService<Space>().Add(physicsObject);
+            game.Components.Add(this);
         }
 
         public override void Initialize()
@@ -102,7 +85,7 @@ namespace Asteroid
             physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .005f;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
-            torpedoModel = Game.Content.Load<Model>("mothership");
+            torpedoModel = Game.Content.Load<Model>("missile");
             torpedoPhysicsObject = new Sphere(MathConverter.Convert(new Vector3(0, 0, 100)), 1)
             {
                 AngularDamping = 0f,

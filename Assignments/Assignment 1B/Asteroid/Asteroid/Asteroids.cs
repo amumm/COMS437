@@ -16,48 +16,21 @@ namespace Asteroid
 
         private Model model;
         private Sphere physicsObject;
-        private Vector3 CurrentPosition
-        {
-            get
-            {
-                return MathConverter.Convert(physicsObject.Position);
-            }
 
-            set {}
-        }
-
-        public Asteroids(Game game) : base(game)
-        {
-            game.Components.Add(this);
-        }
-
-        public Asteroids(Game game, Vector3 pos) : this(game)
+        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
+                Mass = mass,
+                AngularMomentum = MathConverter.Convert(angMomentum),
+                LinearMomentum = MathConverter.Convert(linMomentum),
                 AngularDamping = 0f,
-                LinearDamping = 0f
+                LinearDamping = 0f,
+                Tag = this
             };
 
-            CurrentPosition = pos;
-
-
             Game.Services.GetService<Space>().Add(physicsObject);
-        }
-
-        public Asteroids(Game game, Vector3 pos, float mass) : this(game, pos)
-        {
-            physicsObject.Mass = mass;
-        }
-
-        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum) : this(game, pos, mass)
-        {
-            physicsObject.LinearMomentum = MathConverter.Convert(linMomentum);
-        }
-
-        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : this(game, pos, mass, linMomentum)
-        {
-            physicsObject.AngularMomentum = MathConverter.Convert(angMomentum);
+            game.Components.Add(this);
         }
 
         public override void Initialize()
@@ -69,7 +42,6 @@ namespace Asteroid
         {
             model = Game.Content.Load<Model>("asteroid");
             physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .2f;
-            physicsObject.Tag = this;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
             base.LoadContent();

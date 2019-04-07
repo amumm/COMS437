@@ -21,11 +21,11 @@ namespace Asteroid
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
+                Mass = mass,
                 AngularDamping = 0f,
                 LinearDamping = 0f,
                 AngularMomentum = MathConverter.Convert(angMomentum),
                 LinearMomentum = MathConverter.Convert(linMomentum),
-                Mass = mass,
                 Tag = this
             };
 
@@ -95,7 +95,8 @@ namespace Asteroid
                 Console.WriteLine(otherType);
                 switch (otherType)
                 {
-                    case "Asteroids":
+                    case "FighterShip":
+                        Console.WriteLine("Hit the fighter");
                         break;
                     case "":
                         break;
