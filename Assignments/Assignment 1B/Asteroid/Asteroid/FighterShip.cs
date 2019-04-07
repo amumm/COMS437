@@ -47,7 +47,7 @@ namespace Asteroid
         private float reticleSpeed = 2.5f;
 
         private SpriteFont torpedoText;
-        private int torpedoeStock = 5;
+        private int torpedoeStock = 25;
         private float torpedoReloadTime = 600.0f;
         private float timeSinceFiring = 0.0f;
         private Model torpedoModel;
@@ -208,6 +208,21 @@ namespace Asteroid
                 {
                     timeSinceFiring = 0.0f;
                     torpedoeStock -= 1;
+
+                    var xOffset = (Main.ScreenWidth / 2) - reticlePosition.X;
+                    var yOffset = (Main.ScreenHeight / 2) - reticlePosition.Y;
+
+                    var torpedoDirectionHorizontal = physicsObject.WorldTransform.Left * xOffset;
+                    var torpedoDirectionVertical = physicsObject.WorldTransform.Up * yOffset * .5f;
+                    var torpedoDirectionForward = physicsObject.WorldTransform.Forward * 100;
+
+                    var torpedoPositionHorizontal = physicsObject.WorldTransform.Left * xOffset * .005f;
+                    var torpedoPositionVertical = physicsObject.WorldTransform.Up * yOffset * .05f;
+                    var torpedoPostionForward = physicsObject.position + (physicsObject.WorldTransform.Forward * 15);
+
+                    var torpedoPosition = MathConverter.Convert(torpedoPostionForward + torpedoPositionHorizontal + torpedoPositionVertical);
+                    var torpedoDirection = MathConverter.Convert(torpedoDirectionForward + torpedoDirectionHorizontal + torpedoDirectionVertical);
+                    new Torpedo(Game, pos: torpedoPosition, mass: 10, linMomentum: torpedoDirection, angMomentum: Vector3.Zero);
                 }
             }
         }

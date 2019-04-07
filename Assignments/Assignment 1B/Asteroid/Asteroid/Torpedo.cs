@@ -11,29 +11,29 @@ using System;
 
 namespace Asteroid
 {
-    internal class Asteroids : DrawableGameComponent
+    internal class Torpedo : DrawableGameComponent
     {
-
         private Model model;
         private Sphere physicsObject;
 
-        private float entitySizeScaler = 0.2f;
-        private float modelSizeScaler = 0.25f;
+        private float entitySizeScaler = 10.0f;
+        private float modelSizeScaler = 2.0f;
 
-        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : base(game)
+        public Torpedo(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
                 Mass = mass,
-                AngularMomentum = MathConverter.Convert(angMomentum),
-                LinearMomentum = MathConverter.Convert(linMomentum),
                 AngularDamping = 0f,
                 LinearDamping = 0f,
+                AngularMomentum = MathConverter.Convert(angMomentum),
+                LinearMomentum = MathConverter.Convert(linMomentum),
                 Tag = this
             };
 
-            Game.Services.GetService<Space>().Add(physicsObject);
+            game.Services.GetService<Space>().Add(physicsObject);
             game.Components.Add(this);
+
         }
 
         public override void Initialize()
@@ -43,7 +43,7 @@ namespace Asteroid
 
         protected override void LoadContent()
         {
-            model = Game.Content.Load<Model>("asteroid");
+            model = Game.Content.Load<Model>("missile");
             physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
@@ -98,19 +98,13 @@ namespace Asteroid
                         Game.Services.GetService<Space>().Remove(sender.Entity);
                         Game.Components.Remove(senderGameComponent);
                         break;
-                    case "Torpedo":
-                        Game.Services.GetService<Space>().Remove(sender.Entity);
-                        Game.Components.Remove(senderGameComponent);
-                        break;
                     default:
                         Console.WriteLine("Hit Unknown Object");
                         break;
                 }
-                        //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
-                        //Game.Components.Remove(otherGameComponent);
+                //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
+                //Game.Components.Remove(otherGameComponent);
             }
         }
-
-
     }
 }
