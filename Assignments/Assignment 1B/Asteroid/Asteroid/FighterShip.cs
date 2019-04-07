@@ -19,6 +19,9 @@ namespace Asteroid
         private Sphere physicsObject;
         private Vector3 shipPosition;
 
+        private float entitySizeScaler = 0.005f;
+        private float modelSizeScaler = 0.01f;
+
         private SpriteFont fuelText;
         private float fuel = 10000.0f;
         private float forwardFuelDepletionRate = 0.1f;
@@ -63,7 +66,6 @@ namespace Asteroid
                 AngularDamping = 0f,
                 LinearDamping = 0f,
                 Tag = this
-
             };
 
             game.Services.GetService<Space>().Add(physicsObject);
@@ -82,7 +84,7 @@ namespace Asteroid
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             model = Game.Content.Load<Model>("ship");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .005f;
+            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
             torpedoModel = Game.Content.Load<Model>("missile");
@@ -304,7 +306,7 @@ namespace Asteroid
                 {
                     effect.Alpha = 0.8f;
 
-                    var worldMatrix = Matrix.CreateScale(0.01f) * MathConverter.Convert(physicsObject.WorldTransform);
+                    var worldMatrix = Matrix.CreateScale(modelSizeScaler) * MathConverter.Convert(physicsObject.WorldTransform);
 
                     effect.World = worldMatrix;
                     effect.View = Main.View;

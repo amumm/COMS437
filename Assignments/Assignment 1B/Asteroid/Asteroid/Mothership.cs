@@ -17,6 +17,9 @@ namespace Asteroid
         private Model model;
         private Sphere physicsObject;
 
+        private float entitySizeScaler = 11.0f;
+        private float modelSizeScaler = 1.0f;
+
         public Mothership(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum): base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
@@ -42,7 +45,7 @@ namespace Asteroid
         protected override void LoadContent()
         {
             model = Game.Content.Load<Model>("mothership");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * 1.0f;
+            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * 11.0f;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
             base.LoadContent();

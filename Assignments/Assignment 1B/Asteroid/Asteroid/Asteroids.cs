@@ -17,6 +17,9 @@ namespace Asteroid
         private Model model;
         private Sphere physicsObject;
 
+        private float entitySizeScaler = 0.2f;
+        private float modelSizeScaler = 0.25f;
+
         public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
@@ -41,7 +44,7 @@ namespace Asteroid
         protected override void LoadContent()
         {
             model = Game.Content.Load<Model>("asteroid");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .2f;
+            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
             base.LoadContent();
@@ -65,7 +68,7 @@ namespace Asteroid
                 {
                     effect.Alpha = 0.8f;
 
-                    effect.World = Matrix.CreateScale(0.25f) * MathConverter.Convert(physicsObject.WorldTransform);
+                    effect.World = Matrix.CreateScale(modelSizeScaler) * MathConverter.Convert(physicsObject.WorldTransform);
                     effect.View = Main.View;
                     effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
