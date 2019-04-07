@@ -19,11 +19,17 @@ namespace Asteroid
         private Sphere physicsObject;
         private Vector3 shipPosition;
 
+        // The text displayed if you win the game
+        private SpriteFont gameWinningText;
+
+        // The text displayed if you lose the game
+        private SpriteFont gameOverText;
+
         private float entitySizeScaler = 0.005f;
         private float modelSizeScaler = 0.01f;
 
         private SpriteFont fuelText;
-        private float fuel = 10000.0f;
+        private float fuel = 100.0f;
         private float forwardFuelDepletionRate = 0.1f;
         private float reverseFuelDepletionRate = 0.05f;
         private float rotationFuelDepletionRate = 0.01f;
@@ -103,6 +109,8 @@ namespace Asteroid
             healthText = Game.Content.Load<SpriteFont>("health");
             torpedoText = Game.Content.Load<SpriteFont>("torpedo");
             shieldText = Game.Content.Load<SpriteFont>("shield");
+            gameOverText = Game.Content.Load<SpriteFont>("gameover");
+            gameWinningText = Game.Content.Load<SpriteFont>("gamewon");
 
             reticle = Game.Content.Load<Texture2D>("reticle");
             reticleCenter = new Vector2(reticle.Width / 2, reticle.Height / 2);
@@ -117,19 +125,27 @@ namespace Asteroid
 
         public override void Update(GameTime gameTime)
         {
-            KeyboardState keyState = Keyboard.GetState();
-            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+            if ((health <= 0 || fuel <= 0) && !Main.gameWon)
+            {
+                Main.gameLost = true;
+            }
 
-            timeSinceFiring += gameTime.ElapsedGameTime.Milliseconds;
-            timeSinceShieldSwitch += gameTime.ElapsedGameTime.Milliseconds;
+            if (!Main.gameLost)
+            {
+                KeyboardState keyState = Keyboard.GetState();
+                GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
-            aim(keyState, gamePadState);
-            shoot(keyState, gamePadState);
+                timeSinceFiring += gameTime.ElapsedGameTime.Milliseconds;
+                timeSinceShieldSwitch += gameTime.ElapsedGameTime.Milliseconds;
 
-            handleShield(keyState, gamePadState);
+                aim(keyState, gamePadState);
+                shoot(keyState, gamePadState);
 
-            setRotation(keyState, gamePadState);
-            setPosition(keyState, gamePadState);
+                handleShield(keyState, gamePadState);
+
+                setRotation(keyState, gamePadState);
+                setPosition(keyState, gamePadState);
+            }
 
             base.Update(gameTime);
         }
@@ -235,8 +251,7 @@ namespace Asteroid
             if (keyState.IsKeyDown(Keys.E))
                 roll += rotationSpeed;
 
-            if (fuel  - rotationFuelDepletionRate > 0 &&
-                (yaw != 0 || pitch != 0 || roll != 0))
+            if (yaw != 0 || pitch != 0 || roll != 0)
             {
                 fuel -= rotationFuelDepletionRate;
 
@@ -267,13 +282,13 @@ namespace Asteroid
             }
 
             var forward = physicsObject.WorldTransform.Forward;
-            if (fuel - fuelDepletion > 0 && canMove)
+            if (canMove)
             {
                 fuel -= fuelDepletion;
                 physicsObject.LinearMomentum += forward * direction;
             }
 
-            var position = MathConverter.Convert(physicsObject.position + (physicsObject.WorldTransform.Up * 8) + (physicsObject.WorldTransform.Backward * 1));
+            var position = MathConverter.Convert(physicsObject.position + (physicsObject.WorldTransform.Up * Main.CameraHightScaler) + (physicsObject.WorldTransform.Backward * Main.CameraDepthScaler));
             var lookDirection = MathConverter.Convert(physicsObject.position + forward * 20);
             var up = MathConverter.Convert(physicsObject.WorldTransform.Up);
 
@@ -334,6 +349,20 @@ namespace Asteroid
             spriteBatch.Begin();
             spriteBatch.Draw(reticle, reticlePosition, null, Color.White, 0f, reticleCenter, Vector2.One, SpriteEffects.None, 0f);
             spriteBatch.End();
+
+            if (Main.gameLost)
+            {
+                spriteBatch.Begin();
+                spriteBatch.DrawString(gameOverText, "Game Over ", new Vector2((Main.ScreenWidth / 2) - 165, Main.ScreenHeight / 2), Color.White);
+                spriteBatch.End();
+            }
+
+            if (Main.gameWon)
+            {
+                spriteBatch.Begin();
+                spriteBatch.DrawString(gameWinningText, "You Win! ", new Vector2((Main.ScreenWidth / 2) - 110, Main.ScreenHeight / 2), Color.AntiqueWhite);
+                spriteBatch.End();
+            }
 
             GraphicsDevice.BlendState = BlendState.Opaque;
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;

@@ -13,6 +13,12 @@ namespace Asteroid
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        
+        // True if you have won the game false if still playing
+        public static bool gameWon;
+
+        // True if you have lost the game false if you are still playing
+        public static bool gameLost;
 
         // The star background of the game
         private Model skyboxModel;
@@ -37,10 +43,10 @@ namespace Asteroid
         public static Matrix Translation;
 
         // The distance behind the player that the camera is offset
-        private float cameraDepthScaler = 1.0f;
+        public static float CameraDepthScaler = 1.0f;
 
         // The distance above the player that the camera is offset
-        private float cameraHightScaler = 1.0f;
+        public static float CameraHightScaler = 8.0f;
 
         // The distance to the near view plane
         public static float NearClipPlane
@@ -213,6 +219,10 @@ namespace Asteroid
                 }
                 mesh.Draw();
             }
+
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+
             base.Draw(gameTime);
         }
     }

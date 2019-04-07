@@ -99,7 +99,10 @@ namespace Asteroid
                 switch (otherType)
                 {
                     case "FighterShip":
-                        Console.WriteLine("Hit the fighter");
+                        if (!Main.gameLost)
+                        {
+                            Main.gameWon = true;
+                        }
                         break;
                     case "":
                         break;

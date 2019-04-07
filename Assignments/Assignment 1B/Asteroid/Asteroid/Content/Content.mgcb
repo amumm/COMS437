@@ -51,6 +51,20 @@
 /processorParam:TextureFormat=Compressed
 /build:File.spritefont;fuel.spritefont
 
+#begin gameover.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:gameover.spritefont
+
+#begin gamewon.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:gamewon.spritefont
+
 #begin Green Space Skybox.png
 /importer:TextureImporter
 /processor:TextureProcessor
