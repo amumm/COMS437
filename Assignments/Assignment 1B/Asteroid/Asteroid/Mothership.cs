@@ -11,53 +11,27 @@ using System;
 
 namespace Asteroid
 {
-    internal class Asteroids : DrawableGameComponent
+    internal class Mothership : DrawableGameComponent
     {
 
         private Model model;
         private Sphere physicsObject;
-        private Vector3 CurrentPosition
-        {
-            get
-            {
-                return MathConverter.Convert(physicsObject.Position);
-            }
 
-            set {}
-        }
-
-        public Asteroids(Game game) : base(game)
-        {
-            game.Components.Add(this);
-        }
-
-        public Asteroids(Game game, Vector3 pos) : this(game)
+        public Mothership(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum): base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
                 AngularDamping = 0f,
-                LinearDamping = 0f
+                LinearDamping = 0f,
+                AngularMomentum = MathConverter.Convert(angMomentum),
+                LinearMomentum = MathConverter.Convert(linMomentum),
+                Mass = mass,
+                Tag = this
             };
 
-            CurrentPosition = pos;
+            game.Services.GetService<Space>().Add(physicsObject);
+            game.Components.Add(this);
 
-
-            Game.Services.GetService<Space>().Add(physicsObject);
-        }
-
-        public Asteroids(Game game, Vector3 pos, float mass) : this(game, pos)
-        {
-            physicsObject.Mass = mass;
-        }
-
-        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum) : this(game, pos, mass)
-        {
-            physicsObject.LinearMomentum = MathConverter.Convert(linMomentum);
-        }
-
-        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : this(game, pos, mass, linMomentum)
-        {
-            physicsObject.AngularMomentum = MathConverter.Convert(angMomentum);
         }
 
         public override void Initialize()
@@ -67,9 +41,8 @@ namespace Asteroid
 
         protected override void LoadContent()
         {
-            model = Game.Content.Load<Model>("asteroid");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .2f;
-            physicsObject.Tag = this;
+            model = Game.Content.Load<Model>("mothership");
+            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * 1.0f;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
             base.LoadContent();
@@ -91,9 +64,16 @@ namespace Asteroid
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.Alpha = 0.8f;
+                    var num = 10;
+                    effect.EnableDefaultLighting();
+                    effect.DirectionalLight0.DiffuseColor = new Vector3(num, num, num);
+                    effect.DirectionalLight1.DiffuseColor = new Vector3(num, num, num);
+                    effect.DirectionalLight2.DiffuseColor = new Vector3(num, num, num);
+                    effect.PreferPerPixelLighting = true;
 
-                    effect.World = Matrix.CreateScale(0.25f) * MathConverter.Convert(physicsObject.WorldTransform);
+                    effect.Alpha = 0.5f;
+
+                    effect.World = Matrix.CreateScale(1f) * MathConverter.Convert(physicsObject.WorldTransform);
                     effect.View = Main.View;
                     effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
@@ -116,18 +96,15 @@ namespace Asteroid
                 switch (otherType)
                 {
                     case "Asteroids":
-                        Game.Services.GetService<Space>().Remove(sender.Entity);
-                        Game.Components.Remove(senderGameComponent);
                         break;
                     case "":
-                        Console.WriteLine("Case 2");
                         break;
                     default:
                         Console.WriteLine("Hit Unknown Object");
                         break;
                 }
-                        //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
-                        //Game.Components.Remove(otherGameComponent);
+                //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
+                //Game.Components.Remove(otherGameComponent);
             }
         }
 

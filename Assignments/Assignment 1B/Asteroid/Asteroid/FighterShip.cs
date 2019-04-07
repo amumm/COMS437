@@ -6,6 +6,9 @@ using BEPUphysics.Entities.Prefabs;
 using ConversionHelper;
 using Microsoft.Xna.Framework.Input;
 using System;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
 
 namespace Asteroid
 {
@@ -97,6 +100,7 @@ namespace Asteroid
             spriteBatch = new SpriteBatch(GraphicsDevice);
             model = Game.Content.Load<Model>("ship");
             physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * .005f;
+            physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
             torpedoModel = Game.Content.Load<Model>("mothership");
             torpedoPhysicsObject = new Sphere(MathConverter.Convert(new Vector3(0, 0, 100)), 1)
@@ -281,9 +285,7 @@ namespace Asteroid
             if (fuel - fuelDepletion > 0 && canMove)
             {
                 fuel -= fuelDepletion;
-                //physicsObject.Position += forward * direction;
                 physicsObject.LinearMomentum += forward * direction;
-                Console.WriteLine(physicsObject.LinearMomentum);
             }
 
             var position = MathConverter.Convert(physicsObject.position + (physicsObject.WorldTransform.Up * 8) + (physicsObject.WorldTransform.Backward * 1));
@@ -352,6 +354,35 @@ namespace Asteroid
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             base.Draw(gameTime);
+        }
+
+        void HandleCollision(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        {
+            var otherEntityInformation = other as EntityCollidable;
+            if (otherEntityInformation != null)
+            {
+                var otherGameComponent = otherEntityInformation.Entity.Tag as IGameComponent;
+                var otherType = otherGameComponent.GetType().ToString().Substring(9);
+
+
+                Console.WriteLine(otherType);
+                switch (otherType)
+                {
+                    case "Asteroids":
+                        Console.WriteLine("Hit an Asteroid");
+                        if (!shieldStatus && health > 0)
+                            health -= 10.0f;
+                        break;
+                    case "":
+                        Console.WriteLine("Case 2");
+                        break;
+                    default:
+                        Console.WriteLine("Hit Unknown Object");
+                        break;
+                }
+                //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
+                //Game.Components.Remove(otherGameComponent);
+            }
         }
 
     }

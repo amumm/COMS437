@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections;
 
 namespace Asteroid
 {
@@ -114,8 +115,9 @@ namespace Asteroid
             // Make our BEPU Physics space a service
             Services.AddService<Space>(new Space());
 
-            new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-50f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(50f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
+            new Mothership(this, pos: new Vector3(40, -5, -100), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(1000f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
             Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 10);
 
             skyboxPosition = Vector3.Zero;
