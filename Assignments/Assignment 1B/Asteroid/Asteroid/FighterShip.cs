@@ -314,7 +314,7 @@ namespace Asteroid
             //    }
             //    mesh.Draw();
             //}
-            if (!Main.gameLost)
+            if (health > 0)
             {
                 foreach (var mesh in model.Meshes)
                 {
