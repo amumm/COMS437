@@ -222,7 +222,7 @@ namespace Asteroid
 
                     var torpedoPosition = MathConverter.Convert(torpedoPostionForward + torpedoPositionHorizontal + torpedoPositionVertical);
                     var torpedoDirection = MathConverter.Convert(torpedoDirectionForward + torpedoDirectionHorizontal + torpedoDirectionVertical);
-                    new Torpedo(Game, pos: torpedoPosition, mass: 10, linMomentum: torpedoDirection, angMomentum: Vector3.Zero);
+                    new Torpedo(Game, pos: torpedoPosition, mass: 10, linMomentum: torpedoDirection * 3, angMomentum: Vector3.Zero);
                 }
             }
         }
@@ -245,6 +245,8 @@ namespace Asteroid
 
             if (shieldStatus && fuel - shieldDepletionRate >= 0)
                 fuel -= shieldDepletionRate;
+            if (fuel < 0)
+                fuel = 0;
         }
 
         private void setRotation(KeyboardState keyState, GamePadState gamePadState)
@@ -269,6 +271,8 @@ namespace Asteroid
             if (yaw != 0 || pitch != 0 || roll != 0)
             {
                 fuel -= rotationFuelDepletionRate;
+                if (fuel < 0)
+                    fuel = 0;
 
                 rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
 
@@ -301,6 +305,8 @@ namespace Asteroid
             {
                 fuel -= fuelDepletion;
                 physicsObject.LinearMomentum += forward * direction;
+                if (fuel < 0)
+                    fuel = 0;
             }
 
             var position = MathConverter.Convert(physicsObject.position + (physicsObject.WorldTransform.Up * Main.CameraHightScaler) + (physicsObject.WorldTransform.Backward * Main.CameraDepthScaler));
@@ -313,22 +319,6 @@ namespace Asteroid
         public override void Draw(GameTime gameTime)
         {
             
-            //foreach (var mesh in torpedoModel.Meshes)
-            //{
-            //    foreach (BasicEffect effect in mesh.Effects)
-            //    {
-            //        effect.Alpha = 0.8f;
-
-            //        var worldMatrix = Matrix.CreateScale(.25f) * MathConverter.Convert(torpedoPhysicsObject.WorldTransform);
-            //        //var worldMatrix = Matrix.CreateScale(10.0f) * Matrix.CreateTranslation(0, 0, 0);
-            //        effect.World = worldMatrix;
-
-            //        effect.View = Main.View;
-            //        //effect.View = Matrix.CreateLookAt(new Vector3(0, 45, 20), new Vector3(0, 0, -100), Main.CameraUp);
-            //        effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
-            //    }
-            //    mesh.Draw();
-            //}
             if (health > 0)
             {
                 foreach (var mesh in model.Meshes)
@@ -407,17 +397,38 @@ namespace Asteroid
                         if (!shieldStatus && health > 0)
                             health -= 10.0f;
                         break;
-                    case "":
-                        Console.WriteLine("Case 2");
+                    case "Buoy":
+                        var buoy = otherGameComponent as Buoy;
+                        handleBuoyCollision(buoy.buoyType);
                         break;
                     default:
                         Console.WriteLine("Hit Unknown Object");
                         break;
                 }
-                //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
-                //Game.Components.Remove(otherGameComponent);
             }
         }
 
+        private void handleBuoyCollision(int type)
+        {
+            switch (type)
+            {
+                case 0: // Health
+                    health += 20;
+                    if (health > 100)
+                        health = 100;
+                    break;
+                case 1: // Fuel
+                    fuel += 20;
+                    if (fuel > 100)
+                        fuel = 100;
+                    break;
+                case 2: // Torpedos
+                    torpedoeStock += 2;
+                    if (torpedoeStock > 5)
+                        torpedoeStock = 5;
+                    break;
+
+            }
+        }
     }
 }

@@ -106,11 +106,7 @@ namespace Asteroid
                         Console.WriteLine("Hit Unknown Object");
                         break;
                 }
-                        //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
-                        //Game.Components.Remove(otherGameComponent);
             }
         }
-
-
     }
 }

@@ -468,6 +468,7 @@
     <Compile Include="BEPU\BEPUutilities\Vector4.cs" />
     <Compile Include="BEPU\BEPUutilities\VoronoiRegion.cs" />
     <Compile Include="BEPU\ConversionHelper\MathConverter.cs" />
+    <Compile Include="Buoy.cs" />
     <Compile Include="FighterShip.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Mothership.cs" />

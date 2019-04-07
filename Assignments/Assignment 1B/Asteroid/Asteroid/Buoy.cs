@@ -11,25 +11,28 @@ using System;
 
 namespace Asteroid
 {
-    internal class Torpedo : DrawableGameComponent
+    internal class Buoy : DrawableGameComponent
     {
         private Model model;
         private Sphere physicsObject;
 
-        private float entitySizeScaler = 10.0f;
-        private float modelSizeScaler = 2.0f;
+        private float entitySizeScaler;
+        private float modelSizeScaler;
 
-        public Torpedo(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : base(game)
+        public int buoyType
+        {
+            get;
+            private set;
+        }
+
+        public Buoy(Game game, Vector3 pos, int type) : base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
-                Mass = mass,
-                AngularDamping = 0f,
-                LinearDamping = 0f,
-                AngularMomentum = MathConverter.Convert(angMomentum),
-                LinearMomentum = MathConverter.Convert(linMomentum),
                 Tag = this
             };
+
+            buoyType = type;
 
             game.Services.GetService<Space>().Add(physicsObject);
             game.Components.Add(this);
@@ -43,9 +46,38 @@ namespace Asteroid
 
         protected override void LoadContent()
         {
-            model = Game.Content.Load<Model>("missile");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
-            physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+            if (buoyType == 0)
+            {
+                entitySizeScaler = 0.8f;
+                modelSizeScaler = 0.5f;
+
+                model = Game.Content.Load<Model>("heart");
+                physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
+                physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+            }
+
+            if (buoyType == 1)
+            {
+                entitySizeScaler = 1.4f;
+                modelSizeScaler = 2;
+
+                model = Game.Content.Load<Model>("fuel_can");
+                physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
+                physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+
+                var rotation = MathConverter.Convert(Matrix.CreateFromYawPitchRoll(0,-30,0));
+                physicsObject.WorldTransform = rotation * physicsObject.WorldTransform;
+            }
+
+            if (buoyType == 2)
+            {
+                entitySizeScaler = 7;
+                modelSizeScaler = 6;
+
+                model = Game.Content.Load<Model>("missile");
+                physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
+                physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+            }
 
             base.LoadContent();
         }
@@ -90,11 +122,7 @@ namespace Asteroid
                 Console.WriteLine(otherType);
                 switch (otherType)
                 {
-                    case "Asteroids":
-                        Game.Services.GetService<Space>().Remove(sender.Entity);
-                        Game.Components.Remove(senderGameComponent);
-                        break;
-                    case "Mothership":
+                    case "FighterShip":
                         Game.Services.GetService<Space>().Remove(sender.Entity);
                         Game.Components.Remove(senderGameComponent);
                         break;

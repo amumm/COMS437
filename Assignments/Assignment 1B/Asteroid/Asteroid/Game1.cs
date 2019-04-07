@@ -121,6 +121,9 @@ namespace Asteroid
             // Make our BEPU Physics space a service
             Services.AddService<Space>(new Space());
 
+            new Buoy(this, pos: new Vector3(20, -5, 100), type: 0);
+            new Buoy(this, pos: new Vector3(0, -5, 100), type: 1);
+            new Buoy(this, pos: new Vector3(-20, -5, 100), type: 2);
             new Mothership(this, pos: new Vector3(40, -5, -500), mass: 10000, linMomentum: new Vector3(5000, 10000, -20000), angMomentum: new Vector3(0, 0, 0));
             new Asteroids(this, pos: new Vector3(300, -5, -450), mass: 200, linMomentum: new Vector3(-2000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
             new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
@@ -206,14 +209,15 @@ namespace Asteroid
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    var num = 10;
-                    effect.EnableDefaultLighting();
-                    effect.DirectionalLight0.DiffuseColor = new Vector3(num, num, num);
-                    effect.DirectionalLight1.DiffuseColor = new Vector3(num, num, num);
-                    effect.DirectionalLight2.DiffuseColor = new Vector3(num, num, num);
-                    effect.PreferPerPixelLighting = true;
+                    //var num = 10;
+                    //effect.EnableDefaultLighting();
+                    //effect.DirectionalLight0.DiffuseColor = new Vector3(num, num, num);
+                    //effect.DirectionalLight1.DiffuseColor = new Vector3(num, num, num);
+                    //effect.DirectionalLight2.DiffuseColor = new Vector3(num, num, num);
+                    //effect.PreferPerPixelLighting = true;
 
-                    effect.Alpha = 0.5f;
+                    effect.Alpha = 1.0f;
+                    //effect.Alpha = 0.5f;
                     effect.World = world;
                     effect.View = View;
                     effect.Projection = projection;

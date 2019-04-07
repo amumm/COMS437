@@ -45,7 +45,7 @@ namespace Asteroid
         protected override void LoadContent()
         {
             model = Game.Content.Load<Model>("mothership");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * 11.0f;
+            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
             physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
 
             base.LoadContent();
@@ -74,9 +74,9 @@ namespace Asteroid
                     effect.DirectionalLight2.DiffuseColor = new Vector3(num, num, num);
                     effect.PreferPerPixelLighting = true;
 
-                    effect.Alpha = 0.5f;
+                    effect.Alpha = 0.3f;
 
-                    effect.World = Matrix.CreateScale(1f) * MathConverter.Convert(physicsObject.WorldTransform);
+                    effect.World = Matrix.CreateScale(modelSizeScaler) * MathConverter.Convert(physicsObject.WorldTransform);
                     effect.View = Main.View;
                     effect.Projection = Matrix.CreatePerspectiveFieldOfView(Main.FieldOfView, Main.AspectRatio, Main.NearClipPlane, Main.FarClipPlane);
                 }
@@ -110,11 +110,7 @@ namespace Asteroid
                         Console.WriteLine("Hit Unknown Object");
                         break;
                 }
-                //Game.Services.GetService<Space>().Remove(otherEntityInformation.Entity);
-                //Game.Components.Remove(otherGameComponent);
             }
         }
-
-
     }
 }
