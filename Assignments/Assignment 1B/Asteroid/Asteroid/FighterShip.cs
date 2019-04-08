@@ -29,7 +29,7 @@ namespace Asteroid
         private float modelSizeScaler = 0.01f;
 
         private SpriteFont fuelText;
-        private float fuel = 10000.0f;
+        private float fuel = 200.0f;
         private float forwardFuelDepletionRate = 0.1f;
         private float reverseFuelDepletionRate = 0.05f;
         private float rotationFuelDepletionRate = 0.01f;
@@ -47,7 +47,7 @@ namespace Asteroid
         private float reticleSpeed = 2.5f;
 
         private SpriteFont torpedoText;
-        private int torpedoeStock = 25;
+        private int torpedoeStock = 10;
         private float torpedoReloadTime = 600.0f;
         private float timeSinceFiring = 0.0f;
         private Model torpedoModel;
@@ -222,7 +222,7 @@ namespace Asteroid
 
                     var torpedoPosition = MathConverter.Convert(torpedoPostionForward + torpedoPositionHorizontal + torpedoPositionVertical);
                     var torpedoDirection = MathConverter.Convert(torpedoDirectionForward + torpedoDirectionHorizontal + torpedoDirectionVertical);
-                    new Torpedo(Game, pos: torpedoPosition, mass: 10, linMomentum: torpedoDirection * 3, angMomentum: Vector3.Zero);
+                    new Torpedo(Game, pos: torpedoPosition, mass: 10, linMomentum: torpedoDirection * 5, angMomentum: Vector3.Zero);
                 }
             }
         }
@@ -415,13 +415,13 @@ namespace Asteroid
                     break;
                 case 1: // Fuel
                     fuel += 20;
-                    if (fuel > 100)
-                        fuel = 100;
+                    if (fuel > 200)
+                        fuel = 200;
                     break;
                 case 2: // Torpedos
                     torpedoeStock += 2;
-                    if (torpedoeStock > 5)
-                        torpedoeStock = 5;
+                    if (torpedoeStock > 10)
+                        torpedoeStock = 10;
                     break;
 
             }

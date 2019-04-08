@@ -17,10 +17,12 @@ namespace Asteroid
         private Model model;
         private Sphere physicsObject;
 
-        private float entitySizeScaler = 0.2f;
-        private float modelSizeScaler = 0.25f;
+        private float entitySizeScaler;
+        private float modelSizeScaler;
 
-        public Asteroids(Game game, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : base(game)
+        private int asteroidSize;
+
+        public Asteroids(Game game, int size, Vector3 pos, float mass, Vector3 linMomentum, Vector3 angMomentum) : base(game)
         {
             physicsObject = new Sphere(MathConverter.Convert(pos), 1)
             {
@@ -31,6 +33,8 @@ namespace Asteroid
                 LinearDamping = 0f,
                 Tag = this
             };
+
+            asteroidSize = size;
 
             Game.Services.GetService<Space>().Add(physicsObject);
             game.Components.Add(this);
@@ -44,8 +48,27 @@ namespace Asteroid
         protected override void LoadContent()
         {
             model = Game.Content.Load<Model>("asteroid");
-            physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
-            physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+            if (asteroidSize == 0)
+            {
+                entitySizeScaler = 0.2f;
+                modelSizeScaler = 0.25f;
+                physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
+                physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+            }
+            if (asteroidSize == 1)
+            {
+                entitySizeScaler = 0.8f;
+                modelSizeScaler = 1.0f;
+                physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
+                physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+            }
+            if (asteroidSize == 2)
+            {
+                entitySizeScaler = 3.6f;
+                modelSizeScaler = 5.0f;
+                physicsObject.Radius = model.Meshes[0].BoundingSphere.Radius * entitySizeScaler;
+                physicsObject.CollisionInformation.Events.InitialCollisionDetected += HandleCollision;
+            }
 
             base.LoadContent();
         }
@@ -87,20 +110,33 @@ namespace Asteroid
 
                 var senderGameComponent = sender.Entity.Tag as IGameComponent;
 
-                switch (otherType)
+                if (sender != null)
                 {
-                    case "Asteroids":
-                        Game.Services.GetService<Space>().Remove(sender.Entity);
-                        Game.Components.Remove(senderGameComponent);
-                        break;
-                    case "Mothership":
-                        Game.Services.GetService<Space>().Remove(sender.Entity);
-                        Game.Components.Remove(senderGameComponent);
-                        break;
-                    case "Torpedo":
-                        Game.Services.GetService<Space>().Remove(sender.Entity);
-                        Game.Components.Remove(senderGameComponent);
-                        break;
+                    Space space = Game.Services.GetService<Space>();
+                    var spaceObject = sender.entity as ISpaceObject;
+                    if (spaceObject.Space == space)
+                    { 
+                        switch (otherType)
+                        {
+                            case "Asteroids":
+                                Random rand = new Random();
+                                var destroy = rand.Next(0, 10);
+                                if (destroy == 0)
+                                {
+                                    space.Remove(sender.Entity);
+                                    Game.Components.Remove(senderGameComponent);
+                                }
+                                break;
+                            case "Mothership":
+                                space.Remove(sender.Entity);
+                                Game.Components.Remove(senderGameComponent);
+                                break;
+                            case "Torpedo":
+                                space.Remove(sender.Entity);
+                                Game.Components.Remove(senderGameComponent);
+                                break;
+                        }
+                    }
                 }
             }
         }

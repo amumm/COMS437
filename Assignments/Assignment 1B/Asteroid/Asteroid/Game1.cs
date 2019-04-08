@@ -123,7 +123,7 @@ namespace Asteroid
             Services.AddService<Space>(new Space());
 
             // Creates the mothership that is the objective of this game
-            new Mothership(this, pos: new Vector3(40, 200, -1500), mass: 10000, linMomentum: new Vector3(5000, 10000, -20000), angMomentum: new Vector3(0, 0, 0));
+            new Mothership(this, pos: new Vector3(40, 200, -3000), mass: 10000, linMomentum: new Vector3(5000, 10000, -20000), angMomentum: new Vector3(0, 0, 0));
 
             Random rand = new Random();
 
@@ -163,11 +163,11 @@ namespace Asteroid
         private void createAsteroids(Random rand)
         {
             int i = 0;
-            while(i < 2000)
+            while(i < 1000)
             {
-                int posX = getRandomInRange(rand, -750, 750);  
-                int posY = getRandomInRange(rand, -500, 500);
-                int posZ = getRandomInRange(rand, -2000, 1250);
+                int posX = getRandomInRange(rand, -2000, 2000);  
+                int posY = getRandomInRange(rand, -1000, 1000);
+                int posZ = getRandomInRange(rand, -3000, 1500);
                 Vector3 position = new Vector3(posX, posY, posZ);
 
                 int linX = getRandomInRange(rand, -4000, 4000);
@@ -175,25 +175,26 @@ namespace Asteroid
                 int linZ = getRandomInRange(rand, -4000, 4000);
                 Vector3 linearMomentum = new Vector3(linX, linY, linZ);
 
-                int angX = getRandomInRange(rand, -4000, 4000);
-                int angY = getRandomInRange(rand, -4000, 4000);
-                int angZ = getRandomInRange(rand, -4000, 4000);
+                int angX = getRandomInRange(rand, -500, 500);
+                int angY = getRandomInRange(rand, -500, 500);
+                int angZ = getRandomInRange(rand, -500, 500);
                 Vector3 angularMomentum = new Vector3(angX, angY, angZ);
 
                 int mass = getRandomInRange(rand, 0, 800);
+                int size = rand.Next(0, 3);
 
-                new Asteroids(this, pos: position, mass: mass, linMomentum: linearMomentum, angMomentum: angularMomentum);
+                new Asteroids(this, size: size, pos: position, mass: mass, linMomentum: linearMomentum, angMomentum: angularMomentum);
                 i++;
             }
-            new Asteroids(this, pos: new Vector3(300, -5, -450), mass: 200, linMomentum: new Vector3(-2000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(1000f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
+            new Asteroids(this, size: 0, pos: new Vector3(300, -5, -450), mass: 200, linMomentum: new Vector3(-2000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, size: 0, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, size: 0, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(1000f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
         }
 
         private void createBuoys(Random rand)
         {
             int i = 0;
-            while (i < 200)
+            while (i < 100)
             {
                 int posX = getRandomInRange(rand, -750, 750);
                 int posY = getRandomInRange(rand, -400, 400);
