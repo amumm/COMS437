@@ -95,7 +95,6 @@ namespace Asteroid
 
                 var senderGameComponent = sender.Entity.Tag as IGameComponent;
 
-                Console.WriteLine(otherType);
                 switch (otherType)
                 {
                     case "FighterShip":
@@ -103,11 +102,6 @@ namespace Asteroid
                         {
                             Main.gameWon = true;
                         }
-                        break;
-                    case "":
-                        break;
-                    default:
-                        Console.WriteLine("Hit Unknown Object");
                         break;
                 }
             }

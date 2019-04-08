@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections;
 
 namespace Asteroid
@@ -24,7 +25,7 @@ namespace Asteroid
         private Model skyboxModel;
 
         // The location of the skybox in the world
-        private Vector3 skyboxPosition;
+        public static Vector3 skyboxPosition;
 
         // The size of the skybox and consequently the playable world
         private static float skyboxSize;
@@ -121,13 +122,17 @@ namespace Asteroid
             // Make our BEPU Physics space a service
             Services.AddService<Space>(new Space());
 
-            new Buoy(this, pos: new Vector3(20, -5, 100), type: 0);
-            new Buoy(this, pos: new Vector3(0, -5, 100), type: 1);
-            new Buoy(this, pos: new Vector3(-20, -5, 100), type: 2);
-            new Mothership(this, pos: new Vector3(40, -5, -500), mass: 10000, linMomentum: new Vector3(5000, 10000, -20000), angMomentum: new Vector3(0, 0, 0));
-            new Asteroids(this, pos: new Vector3(300, -5, -450), mass: 200, linMomentum: new Vector3(-2000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
-            new Asteroids(this, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(1000f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
+            // Creates the mothership that is the objective of this game
+            new Mothership(this, pos: new Vector3(40, 200, -1500), mass: 10000, linMomentum: new Vector3(5000, 10000, -20000), angMomentum: new Vector3(0, 0, 0));
+
+            Random rand = new Random();
+
+            // Creates all of the obstacles in the game
+            createAsteroids(rand);
+
+            // Creates all of the refuels and resupplies in the game
+            createBuoys(rand);
+
             Player = new FighterShip(this, pos: new Vector3(x: 0, y: 0, z: 0), mass: 10);
 
             skyboxPosition = Vector3.Zero;
@@ -153,6 +158,61 @@ namespace Asteroid
             AspectRatio = ScreenWidth / ScreenHeight;
 
             base.Initialize();
+        }
+
+        private void createAsteroids(Random rand)
+        {
+            int i = 0;
+            while(i < 2000)
+            {
+                int posX = getRandomInRange(rand, -750, 750);  
+                int posY = getRandomInRange(rand, -500, 500);
+                int posZ = getRandomInRange(rand, -2000, 1250);
+                Vector3 position = new Vector3(posX, posY, posZ);
+
+                int linX = getRandomInRange(rand, -4000, 4000);
+                int linY = getRandomInRange(rand, -4000, 4000);
+                int linZ = getRandomInRange(rand, -4000, 4000);
+                Vector3 linearMomentum = new Vector3(linX, linY, linZ);
+
+                int angX = getRandomInRange(rand, -4000, 4000);
+                int angY = getRandomInRange(rand, -4000, 4000);
+                int angZ = getRandomInRange(rand, -4000, 4000);
+                Vector3 angularMomentum = new Vector3(angX, angY, angZ);
+
+                int mass = getRandomInRange(rand, 0, 800);
+
+                new Asteroids(this, pos: position, mass: mass, linMomentum: linearMomentum, angMomentum: angularMomentum);
+                i++;
+            }
+            new Asteroids(this, pos: new Vector3(300, -5, -450), mass: 200, linMomentum: new Vector3(-2000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, pos: new Vector3(40, -5, -45), mass: 200, linMomentum: new Vector3(-1000f, 0, 0), angMomentum: new Vector3(0.3f, 0.5f, 0.5f));
+            new Asteroids(this, pos: new Vector3(-40, -5, -50), mass: 300, linMomentum: new Vector3(1000f, 0, 0), angMomentum: new Vector3(-0.5f, -0.6f, 0.2f));
+        }
+
+        private void createBuoys(Random rand)
+        {
+            int i = 0;
+            while (i < 200)
+            {
+                int posX = getRandomInRange(rand, -750, 750);
+                int posY = getRandomInRange(rand, -400, 400);
+                int posZ = getRandomInRange(rand, -1250, 750);
+                Vector3 position = new Vector3(posX, posY, posZ);
+
+                int type = rand.Next(0, 3);
+
+                new Buoy(this, pos: position, type: type);
+                i++;
+            }
+            new Buoy(this, pos: new Vector3(20, -5, 100), type: 0);
+            new Buoy(this, pos: new Vector3(0, -5, 100), type: 1);
+            new Buoy(this, pos: new Vector3(-20, -5, 100), type: 2);
+        }
+
+        private int getRandomInRange(Random rand, int min, int max)
+        {
+            return min + rand.Next(0, max * 2);
         }
 
         /// <summary>

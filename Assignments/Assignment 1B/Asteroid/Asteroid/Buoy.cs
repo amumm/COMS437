@@ -119,15 +119,11 @@ namespace Asteroid
 
                 var senderGameComponent = sender.Entity.Tag as IGameComponent;
 
-                Console.WriteLine(otherType);
                 switch (otherType)
                 {
                     case "FighterShip":
                         Game.Services.GetService<Space>().Remove(sender.Entity);
                         Game.Components.Remove(senderGameComponent);
-                        break;
-                    default:
-                        Console.WriteLine("Hit Unknown Object");
                         break;
                 }
             }

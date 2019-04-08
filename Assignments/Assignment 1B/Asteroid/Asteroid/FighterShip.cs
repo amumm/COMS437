@@ -29,7 +29,7 @@ namespace Asteroid
         private float modelSizeScaler = 0.01f;
 
         private SpriteFont fuelText;
-        private float fuel = 100.0f;
+        private float fuel = 10000.0f;
         private float forwardFuelDepletionRate = 0.1f;
         private float reverseFuelDepletionRate = 0.05f;
         private float rotationFuelDepletionRate = 0.01f;
@@ -305,6 +305,7 @@ namespace Asteroid
             {
                 fuel -= fuelDepletion;
                 physicsObject.LinearMomentum += forward * direction;
+                Main.skyboxPosition = MathConverter.Convert(physicsObject.position);
                 if (fuel < 0)
                     fuel = 0;
             }
@@ -389,20 +390,15 @@ namespace Asteroid
 
                 var senderGameComponent = sender.Entity.Tag as IGameComponent;
 
-                Console.WriteLine(otherType);
                 switch (otherType)
                 {
                     case "Asteroids":
-                        Console.WriteLine("Hit an Asteroid");
                         if (!shieldStatus && health > 0)
                             health -= 10.0f;
                         break;
                     case "Buoy":
                         var buoy = otherGameComponent as Buoy;
                         handleBuoyCollision(buoy.buoyType);
-                        break;
-                    default:
-                        Console.WriteLine("Hit Unknown Object");
                         break;
                 }
             }

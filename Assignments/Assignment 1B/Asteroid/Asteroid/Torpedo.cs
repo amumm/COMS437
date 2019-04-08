@@ -7,7 +7,6 @@ using ConversionHelper;
 using BEPUphysics.BroadPhaseEntries.MobileCollidables;
 using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.NarrowPhaseSystems.Pairs;
-using System;
 
 namespace Asteroid
 {
@@ -87,7 +86,6 @@ namespace Asteroid
 
                 var senderGameComponent = sender.Entity.Tag as IGameComponent;
 
-                Console.WriteLine(otherType);
                 switch (otherType)
                 {
                     case "Asteroids":
@@ -97,9 +95,6 @@ namespace Asteroid
                     case "Mothership":
                         Game.Services.GetService<Space>().Remove(sender.Entity);
                         Game.Components.Remove(senderGameComponent);
-                        break;
-                    default:
-                        Console.WriteLine("Hit Unknown Object");
                         break;
                 }
             }
