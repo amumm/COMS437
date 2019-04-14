@@ -53,8 +53,7 @@ public class User_Input : MonoBehaviour
         Debug.Log("Row: " + row + " Col: " + col);
         if (isInBounds(row, col) && pieces[row, col] == null)
         {
-            if (canPlacePiece(row, col))
-                pieces[row, col] = Instantiate(piece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
+            tryPlacePiece(row, col);
         }
     }
 
@@ -63,7 +62,7 @@ public class User_Input : MonoBehaviour
         return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 
-    bool canPlacePiece(int row, int col)
+    void tryPlacePiece(int row, int col)
     {
         bool flipTopLeft = checkDirection(row, col, -1, -1);
         bool flipTop = checkDirection(row, col, 0, -1);
@@ -74,7 +73,25 @@ public class User_Input : MonoBehaviour
         bool flipBottom = checkDirection(row, col, 0, 1);
         bool flipBottomRight = checkDirection(row, col, 1, 1);
 
-        return flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight;
+        if (flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight)
+            pieces[row, col] = Instantiate(piece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
+
+        if (flipTopLeft)
+            flipDirection(row, col, -1, -1);
+        if (flipTop)
+            flipDirection(row, col, 0, -1);
+        if (flipTopRight)
+            flipDirection(row, col, 1, -1);
+        if (flipLeft)
+            flipDirection(row, col, -1, 0);
+        if (flipRight)
+            flipDirection(row, col, 1, 0);
+        if (flipBottomLeft)
+            flipDirection(row, col, -1, 1);
+        if (flipBottom)
+            flipDirection(row, col, 0, 1);
+        if (flipBottomRight)
+            flipDirection(row, col, 1, 1);
     }
 
     bool checkDirection(int row, int col, int x, int z)
@@ -103,6 +120,34 @@ public class User_Input : MonoBehaviour
             rotation = cur.transform.rotation;
         }
         return foundOppositeColor;
+    }
+
+    void flipDirection(int row, int col, int x, int z)
+    {
+        if (!isInBounds(row + z, col + x))
+            return;
+
+        GameObject cur = pieces[row + z, col + x];
+        if (cur == null)
+            return;
+
+        var rotation = cur.transform.rotation;
+        while (rotation.z > -1 && rotation.z < 1)
+        {
+            //cur.transform.Rotate(180, 180, 180);
+            Animator animator = cur.GetComponent<Animator>();
+            animator.SetTrigger("flipWhiteToBlack");
+            x += x;
+            z += z;
+            if (isInBounds(row + z, col + x))
+                cur = pieces[row + z, col + x];
+            else
+                return;
+
+            if (cur == null)
+                return;
+            rotation = cur.transform.rotation;
+        }
     }
 
 }
