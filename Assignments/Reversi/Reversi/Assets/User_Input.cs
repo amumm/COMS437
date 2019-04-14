@@ -65,14 +65,14 @@ public class User_Input : MonoBehaviour
 
     bool canPlacePiece(int row, int col)
     {
-        bool flipTopLeft = checkDirection(row, col, -1, 1);
-        bool flipTop = checkDirection(row, col, 0, 1);
-        bool flipTopRight = checkDirection(row, col, 1, 1);
+        bool flipTopLeft = checkDirection(row, col, -1, -1);
+        bool flipTop = checkDirection(row, col, 0, -1);
+        bool flipTopRight = checkDirection(row, col, 1, -1);
         bool flipLeft = checkDirection(row, col, -1, 0);
         bool flipRight = checkDirection(row, col, 1, 0);
-        bool flipBottomLeft = checkDirection(row, col, -1, -1);
-        bool flipBottom = checkDirection(row, col, 0, -1);
-        bool flipBottomRight = checkDirection(row, col, 1, -1);
+        bool flipBottomLeft = checkDirection(row, col, -1, 1);
+        bool flipBottom = checkDirection(row, col, 0, 1);
+        bool flipBottomRight = checkDirection(row, col, 1, 1);
 
         return flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight;
     }
@@ -88,7 +88,7 @@ public class User_Input : MonoBehaviour
 
         bool foundOppositeColor = false;
         var rotation = cur.transform.rotation;
-        while(rotation.z == 0)
+        while(rotation.z > -1 && rotation.z < 1)
         {
             foundOppositeColor = true;
             x += x;
