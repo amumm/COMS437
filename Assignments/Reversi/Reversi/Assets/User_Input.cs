@@ -91,6 +91,8 @@ public class User_Input : MonoBehaviour
         while(rotation.z == 0)
         {
             foundOppositeColor = true;
+            x += x;
+            z += z;
             if (isInBounds(row + z, col + x))
                 cur = pieces[row + z, col + x];
             else
@@ -98,6 +100,7 @@ public class User_Input : MonoBehaviour
 
             if (cur == null)
                 return false;
+            rotation = cur.transform.rotation;
         }
         return foundOppositeColor;
     }
