@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class User_Input : MonoBehaviour
 {
-    public GameObject piece;
+    public GameObject blackPiece;
+    public GameObject whitePiece;
 
     private const int numberOfRows = 8;
     private const int numberOfColumns = 8;
-    private const float baseTileHeight = 1.5f;
+    private const float baseTileHeight = 1.1f;
     private Vector3 blackOrientation = new Vector3(0, 0, 180);
     private Vector3 whiteOrientation = new Vector3(0, 0, 0);
     private GameObject[,] pieces;
@@ -21,10 +22,10 @@ public class User_Input : MonoBehaviour
     {
         pieces = new GameObject[numberOfRows, numberOfColumns];
 
-        pieces[3, 3] = Instantiate(piece, new Vector3(3.5f, baseTileHeight, -3.5f), Quaternion.Euler(blackOrientation));
-        pieces[3, 4] = Instantiate(piece, new Vector3(4.5f, baseTileHeight, -3.5f), Quaternion.Euler(whiteOrientation));
-        pieces[4, 3] = Instantiate(piece, new Vector3(3.5f, baseTileHeight, -4.5f), Quaternion.Euler(whiteOrientation));
-        pieces[4, 4] = Instantiate(piece, new Vector3(4.5f, baseTileHeight, -4.5f), Quaternion.Euler(blackOrientation));
+        pieces[3, 3] = Instantiate(blackPiece, new Vector3(3.5f, baseTileHeight, -3.5f), Quaternion.Euler(blackOrientation));
+        pieces[3, 4] = Instantiate(whitePiece, new Vector3(4.5f, baseTileHeight, -3.5f), Quaternion.Euler(whiteOrientation));
+        pieces[4, 3] = Instantiate(whitePiece, new Vector3(3.5f, baseTileHeight, -4.5f), Quaternion.Euler(whiteOrientation));
+        pieces[4, 4] = Instantiate(blackPiece, new Vector3(4.5f, baseTileHeight, -4.5f), Quaternion.Euler(blackOrientation));
     }
 
     // Update is called once per frame
@@ -74,7 +75,7 @@ public class User_Input : MonoBehaviour
         bool flipBottomRight = checkDirection(row, col, 1, 1);
 
         if (flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight)
-            pieces[row, col] = Instantiate(piece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
+            pieces[row, col] = Instantiate(blackPiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
 
         if (flipTopLeft)
             flipDirection(row, col, -1, -1);
