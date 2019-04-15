@@ -51,7 +51,6 @@ public class User_Input : MonoBehaviour
         int row = (int)(point.z / -1.0f);
         int col = (int)(point.x / 1.0f);
 
-        Debug.Log("Row: " + row + " Col: " + col);
         if (isInBounds(row, col) && pieces[row, col] == null)
         {
             tryPlacePiece(row, col);
@@ -65,37 +64,55 @@ public class User_Input : MonoBehaviour
 
     void tryPlacePiece(int row, int col)
     {
-        bool flipTopLeft = checkDirection(row, col, -1, -1);
-        bool flipTop = checkDirection(row, col, 0, -1);
-        bool flipTopRight = checkDirection(row, col, 1, -1);
-        bool flipLeft = checkDirection(row, col, -1, 0);
-        bool flipRight = checkDirection(row, col, 1, 0);
-        bool flipBottomLeft = checkDirection(row, col, -1, 1);
-        bool flipBottom = checkDirection(row, col, 0, 1);
-        bool flipBottomRight = checkDirection(row, col, 1, 1);
+        bool didPlacePiece = false;
+
+        Func<float, bool> checkSide;
+        if (playersTurn)
+            checkSide = angle => angle > -1 && angle < 1;
+        else
+            checkSide = angle => angle > 179 && angle < 181;
+
+        bool flipTopLeft = checkDirection(row, col, -1, -1, checkSide);
+        bool flipTop = checkDirection(row, col, 0, -1, checkSide);
+        bool flipTopRight = checkDirection(row, col, 1, -1, checkSide);
+        bool flipLeft = checkDirection(row, col, -1, 0, checkSide);
+        bool flipRight = checkDirection(row, col, 1, 0, checkSide);
+        bool flipBottomLeft = checkDirection(row, col, -1, 1, checkSide);
+        bool flipBottom = checkDirection(row, col, 0, 1, checkSide);
+        bool flipBottomRight = checkDirection(row, col, 1, 1, checkSide);
 
         if (flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight)
-            pieces[row, col] = Instantiate(blackPiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
+        {
+            if (playersTurn)
+                pieces[row, col] = Instantiate(blackPiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
+            else
+                pieces[row, col] = Instantiate(whitePiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(whiteOrientation));
+
+            didPlacePiece = true;
+        }
 
         if (flipTopLeft)
-            flipDirection(row, col, -1, -1);
+            flipDirection(row, col, -1, -1, checkSide);
         if (flipTop)
-            flipDirection(row, col, 0, -1);
+            flipDirection(row, col, 0, -1, checkSide);
         if (flipTopRight)
-            flipDirection(row, col, 1, -1);
+            flipDirection(row, col, 1, -1, checkSide);
         if (flipLeft)
-            flipDirection(row, col, -1, 0);
+            flipDirection(row, col, -1, 0, checkSide);
         if (flipRight)
-            flipDirection(row, col, 1, 0);
+            flipDirection(row, col, 1, 0, checkSide);
         if (flipBottomLeft)
-            flipDirection(row, col, -1, 1);
+            flipDirection(row, col, -1, 1, checkSide);
         if (flipBottom)
-            flipDirection(row, col, 0, 1);
+            flipDirection(row, col, 0, 1, checkSide);
         if (flipBottomRight)
-            flipDirection(row, col, 1, 1);
+            flipDirection(row, col, 1, 1, checkSide);
+
+        if (didPlacePiece)
+            playersTurn = !playersTurn;
     }
 
-    bool checkDirection(int row, int col, int x, int z)
+    bool checkDirection(int row, int col, int x, int z, Func<float, bool> checkSide)
     {
         if (!isInBounds(row + z, col + x))
             return false;
@@ -105,8 +122,8 @@ public class User_Input : MonoBehaviour
             return false;
 
         bool foundOppositeColor = false;
-        var rotation = cur.transform.rotation;
-        while(rotation.z > -1 && rotation.z < 1)
+        var rotation = cur.transform.eulerAngles;
+        while(checkSide(rotation.z))
         {
             foundOppositeColor = true;
             x += x;
@@ -118,12 +135,12 @@ public class User_Input : MonoBehaviour
 
             if (cur == null)
                 return false;
-            rotation = cur.transform.rotation;
+            rotation = cur.transform.eulerAngles;
         }
         return foundOppositeColor;
     }
 
-    void flipDirection(int row, int col, int x, int z)
+    void flipDirection(int row, int col, int x, int z, Func<float, bool> checkSide)
     {
         if (!isInBounds(row + z, col + x))
             return;
@@ -132,15 +149,16 @@ public class User_Input : MonoBehaviour
         if (cur == null)
             return;
 
-        var rotation = cur.transform.rotation;
-        while (rotation.z > -1 && rotation.z < 1)
+        var rotation = cur.transform.eulerAngles;
+        while (checkSide(rotation.z))
         {
-            //cur.transform.Rotate(180, 180, 180);
             Animator animator = cur.GetComponent<Animator>();
-            //var child = cur.transform.GetChild(0).gameObject;
-            //var anim = child.GetComponent<Animation>();
-            animator.SetTrigger("flipWhiteToBlack");
-            //anim.Play("flipWhiteToBlack");
+            if (playersTurn)
+                animator.SetTrigger("flipWhiteToBlack");
+            else
+                //animator.SetTrigger("flipWhiteToBlack");
+                animator.SetTrigger("flipBlackToWhite");
+
             x += x;
             z += z;
             if (isInBounds(row + z, col + x))
@@ -150,7 +168,7 @@ public class User_Input : MonoBehaviour
 
             if (cur == null)
                 return;
-            rotation = cur.transform.rotation;
+            rotation = cur.transform.eulerAngles;
         }
     }
 
