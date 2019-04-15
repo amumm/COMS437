@@ -136,7 +136,10 @@ public class User_Input : MonoBehaviour
         {
             //cur.transform.Rotate(180, 180, 180);
             Animator animator = cur.GetComponent<Animator>();
+            //var child = cur.transform.GetChild(0).gameObject;
+            //var anim = child.GetComponent<Animation>();
             animator.SetTrigger("flipWhiteToBlack");
+            //anim.Play("flipWhiteToBlack");
             x += x;
             z += z;
             if (isInBounds(row + z, col + x))
