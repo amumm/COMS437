@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Assets
 {
-    enum Player
+    public enum Player
     {
         black = 0,
         white = 1
@@ -15,9 +15,9 @@ namespace Assets
 
     public class Node
     {
-        int state;
+        public Player state;
 
-        public Node(int state)
+        public Node(Player state)
         {
             this.state = state;
         }

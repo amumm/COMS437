@@ -11,7 +11,35 @@ namespace Assets
     {
         private static Move canPlacePiece(Node[,] board, int row, int col, Player player)
         {
-            Move move = new Move(player, row, col);
+            Player checkSide;
+            if (player == Player.black)
+                checkSide = Player.white;
+            else
+                checkSide = Player.black;
+
+            bool flipTopLeft = utils.checkDirection(board, row, col, -1, -1, checkSide);
+            bool flipTop = utils.checkDirection(board, row, col, 0, -1, checkSide);
+            bool flipTopRight = utils.checkDirection(board, row, col, 1, -1, checkSide);
+            bool flipLeft = utils.checkDirection(board, row, col, -1, 0, checkSide);
+            bool flipRight = utils.checkDirection(board, row, col, 1, 0, checkSide);
+            bool flipBottomLeft = utils.checkDirection(board, row, col, -1, 1, checkSide);
+            bool flipBottom = utils.checkDirection(board, row, col, 0, 1, checkSide);
+            bool flipBottomRight = utils.checkDirection(board, row, col, 1, 1, checkSide);
+
+            Move move = null;
+            if (flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight)
+            {
+                move = new Move(player, row, col);
+                move.flipTopLeft = flipTopLeft;
+                move.flipTop = flipTop;
+                move.flipTopRight = flipTopRight;
+                move.flipLeft = flipLeft;
+                move.flipRight = flipRight;
+                move.flipBottomLeft = flipBottomLeft;
+                move.flipBottom = flipBottom;
+                move.flipBottomRight = flipBottomRight;
+            }
+
             return move;
         }
         private static ArrayList findMoves(Node[,] board, Player player)
@@ -21,17 +49,35 @@ namespace Assets
             {
                 for (int y = 0; y < board.GetLength(1); y++)
                 {
-                    canPlacePiece(board, x, y, player);
+                    Move move = canPlacePiece(board, x, y, player);
+                    if (move != null)
+                        availableMoves.Add(move);
                 }
             }
 
-            return new ArrayList();
+            return availableMoves;
         }
 
-        private static ArrayList flipPieces()
+        private static Node[,] flipPieces(Node[,] board, Move move)
         {
+            if (move.flipTopLeft)
+                utils.flipDirection(board, move.row, move.col, -1, -1, move.player);
+            if (move.flipTop)
+                utils.flipDirection(board, move.row, move.col, 0, -1, move.player);
+            if (move.flipTopRight)
+                utils.flipDirection(board, move.row, move.col, 1, -1, move.player);
+            if (move.flipLeft)
+                utils.flipDirection(board, move.row, move.col, -1, 0, move.player);
+            if (move.flipRight)
+                utils.flipDirection(board, move.row, move.col, 1, 0, move.player);
+            if (move.flipBottomLeft)
+                utils.flipDirection(board, move.row, move.col, -1, 1, move.player);
+            if (move.flipBottom)
+                utils.flipDirection(board, move.row, move.col, 0, 1, move.player);
+            if (move.flipBottomRight)
+                utils.flipDirection(board, move.row, move.col, 1, 1, move.player);
 
-            return new ArrayList();
+            return board;
         }
 
         public static void simulateMoves()

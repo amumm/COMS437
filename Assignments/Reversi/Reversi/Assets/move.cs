@@ -8,19 +8,19 @@ namespace Assets
 {
     class Move
     {
-        bool flipTopLeft;
-        bool flipTop;
-        bool flipTopRight;
-        bool flipLeft;
-        bool flipRight;
-        bool flipBottomLeft;
-        bool flipBottom;
-        bool flipBottomRight;
+        public bool flipTopLeft;
+        public bool flipTop;
+        public bool flipTopRight;
+        public bool flipLeft;
+        public bool flipRight;
+        public bool flipBottomLeft;
+        public bool flipBottom;
+        public bool flipBottomRight;
 
-        int row;
-        int col;
-
-        Player player;
+       public int row;
+       public int col;
+        
+       public Player player;
 
         public Move(Player player, int row, int col)
         {
