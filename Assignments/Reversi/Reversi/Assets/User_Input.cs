@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,15 +52,10 @@ public class User_Input : MonoBehaviour
         int row = (int)(point.z / -1.0f);
         int col = (int)(point.x / 1.0f);
 
-        if (isInBounds(row, col) && pieces[row, col] == null)
+        if (utils.isInBounds(row, col) && pieces[row, col] == null)
         {
             tryPlacePiece(row, col);
         }
-    }
-
-    bool isInBounds(int row, int col)
-    {
-        return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 
     void tryPlacePiece(int row, int col)
@@ -114,7 +110,7 @@ public class User_Input : MonoBehaviour
 
     bool checkDirection(int row, int col, int x, int z, Func<float, bool> checkSide)
     {
-        if (!isInBounds(row + z, col + x))
+        if (!utils.isInBounds(row + z, col + x))
             return false;
 
         GameObject cur = pieces[row + z, col + x];
@@ -128,7 +124,7 @@ public class User_Input : MonoBehaviour
             foundOppositeColor = true;
             x += x;
             z += z;
-            if (isInBounds(row + z, col + x))
+            if (utils.isInBounds(row + z, col + x))
                 cur = pieces[row + z, col + x];
             else
                 return false;
@@ -142,7 +138,7 @@ public class User_Input : MonoBehaviour
 
     void flipDirection(int row, int col, int x, int z, Func<float, bool> checkSide)
     {
-        if (!isInBounds(row + z, col + x))
+        if (!utils.isInBounds(row + z, col + x))
             return;
 
         GameObject cur = pieces[row + z, col + x];
@@ -161,7 +157,7 @@ public class User_Input : MonoBehaviour
 
             x += x;
             z += z;
-            if (isInBounds(row + z, col + x))
+            if (utils.isInBounds(row + z, col + x))
                 cur = pieces[row + z, col + x];
             else
                 return;
