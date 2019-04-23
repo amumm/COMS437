@@ -80,12 +80,20 @@ namespace Assets
             return board;
         }
 
-        public static void simulateMoves()
+        public static void simulateMoves(Node[,] board, int maxDepth)
         {
+            int currentDepth = 0;
 
+            ArrayList moves = findMoves(board, Player.white);
+
+            if (moves.Capacity > 0)
+            {
+                simulateMovesRec(new Node(Player.white), moves, board);
+            }
+            return;
         }
 
-        private static void simuateMovesRec()
+        private static void simulateMovesRec(Node root, ArrayList moves, Node[,] board)
         {
 
         }
