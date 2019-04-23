@@ -88,14 +88,51 @@ namespace Assets
 
             if (moves.Capacity > 0)
             {
-                simulateMovesRec(new Node(Player.white), moves, board);
+                simulateMovesRec(new Node(Player.white, null), moves, board, maxDepth, currentDepth);
             }
             return;
         }
 
-        private static void simulateMovesRec(Node root, ArrayList moves, Node[,] board)
+        private static void simulateMovesRec(Node root, ArrayList moves, Node[,] board, int maxDepth, int depth)
         {
+            if (++depth >= maxDepth)
+            {
+                return;
+            }
+            foreach(Move move in moves){
+                // Set up a parent and child relationship with the nodes
+                Node child = new Node(move.player, root);
+                root.addChild(child);
 
+                Node[,] tempBoard = new Node[8, 8];
+                for (int x = 0; x < 8; x++)
+                {
+                    for (int y = 0; y < 8; y++)
+                    {
+                        // TODO: Add deep copy
+                        tempBoard[x, y] = board[x, y];
+                    }
+                }
+
+                // Add move to the game board
+                board[move.row, move.col] = child;
+
+                // Flip the simulated pieces for the move.
+                flipPieces(tempBoard, move);
+
+                // Simulate the opponent's possible counter moves.
+                Player nextPlayer;
+                if (move.player == Player.black)
+                    nextPlayer = Player.white;
+                else
+                    nextPlayer = Player.black;
+
+                ArrayList tempMoves = findMoves(tempBoard, nextPlayer);
+                if (tempMoves.Capacity > 0)
+                {
+                    simulateMovesRec(child, tempMoves, tempBoard, maxDepth, depth);
+                }
+            }
         }
 
         public static ArrayList minMax()
