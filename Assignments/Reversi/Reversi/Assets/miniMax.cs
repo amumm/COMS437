@@ -9,9 +9,10 @@ namespace Assets
 {
     public static class miniMax
     {
-        private static bool canPlacePiece(Node[,] board, int row, int col, Player player)
+        private static Move canPlacePiece(Node[,] board, int row, int col, Player player)
         {
-            return false;
+            Move move = new Move(player, row, col);
+            return move;
         }
         private static ArrayList findMoves(Node[,] board, Player player)
         {
