@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Assets
 {
-    public static class miniMax
+    public static class MiniMax
     {
         private static Move canPlacePiece(Node[,] board, int row, int col, Player player)
         {
@@ -152,6 +153,32 @@ namespace Assets
                         node.numWhite++;
                 }
             }
+        }
+
+        public static Node[,] createNodeBoard(GameObject[,] pieces)
+        {
+            Node[,] board = new Node[8, 8];
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    GameObject piece = pieces[x, y];
+                    if (piece == null)
+                        continue;
+
+                    Player player;
+                    var rotation = piece.transform.eulerAngles.z;
+                    if (rotation > -1 && rotation < 1)
+                    {
+                        player = Player.white;
+                    } else { 
+                        player = Player.black;
+                    }
+
+                    board[x, y] = new Node(player, x, y, null);
+                }
+            }
+            return board;
         }
 
         public static Node minMax(Node[,] board, int maxDepth)

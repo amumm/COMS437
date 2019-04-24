@@ -32,7 +32,7 @@ public class User_Input : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && playersTurn)
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -45,6 +45,15 @@ public class User_Input : MonoBehaviour
                 }
             }
         }
+
+        if (!playersTurn)
+        {
+            Node[,] board = MiniMax.createNodeBoard(pieces);
+            Node bestMove = MiniMax.minMax(board, 1);
+            tryPlacePiece(bestMove.row, bestMove.col);
+        }
+
+
     }
 
     void getCell(Vector3 point)
