@@ -88,7 +88,7 @@ namespace Assets
 
             if (moves.Capacity > 0)
             {
-                simulateMovesRec(new Node(Player.white, null), moves, board, maxDepth, currentDepth);
+                simulateMovesRec(new Node(Player.white, -1, -1, null), moves, board, maxDepth, currentDepth);
             }
             return;
         }
@@ -97,11 +97,12 @@ namespace Assets
         {
             if (++depth >= maxDepth)
             {
+                setScore(root, board);
                 return;
             }
             foreach(Move move in moves){
-                // Set up a parent and child relationship with the nodes
-                Node child = new Node(move.player, root);
+                // Set up a parent and child relationship with the nodes.
+                Node child = new Node(move.player, move.row, move.col, root);
                 root.addChild(child);
 
                 Node[,] tempBoard = new Node[8, 8];
@@ -115,7 +116,7 @@ namespace Assets
                 }
 
                 // Add move to the game board
-                board[move.row, move.col] = child;
+                tempBoard[move.row, move.col] = child;
 
                 // Flip the simulated pieces for the move.
                 flipPieces(tempBoard, move);
@@ -135,10 +136,74 @@ namespace Assets
             }
         }
 
-        public static ArrayList minMax()
+        public static void setScore(Node node, Node[,] board)
         {
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 0; y < 8; y++)
+                {
+                    if (board[x, y] == null)
+                        continue;
+                    if (board[x, y].state == Player.black)
+                        node.numBlack++;
+                    else 
+                        node.numWhite++;
+                }
+            }
+        }
 
-            return new ArrayList();
+        public static Node minMax(bool isMaximizer, Node root, int currentDepth, int maxDepth)
+        {
+            // Break recursion if a leaf nodd is reached
+            if (currentDepth == maxDepth)
+                return root;
+
+            ArrayList childResults = new ArrayList();
+            foreach(Node child in root.children)
+            {
+                Node childResult = minMax(!isMaximizer, child, currentDepth++, maxDepth);
+                childResults.Add(childResult);
+            }
+
+            // Find the max
+            if (isMaximizer)
+            {
+                return findMax(childResults);
+            }
+
+            // Find the min
+            return findMin(childResults);
+
+        }
+
+        public static Node findMax(ArrayList children)
+        {
+            Node maxNode = null;
+            int max = 0;
+            foreach(Node child in children)
+            {
+                if (child.numWhite > max)
+                {
+                    max = child.numWhite;
+                    maxNode = child;
+                }
+            }
+            return maxNode;
+        }
+
+        public static Node findMin(ArrayList children)
+        {
+            Node minNode = null;
+            int min = 64;
+            foreach (Node child in children)
+            {
+                if (child.numWhite < min)
+                {
+                    min = child.numWhite;
+                    minNode = child;
+                }
+            }
+            return minNode;
         }
     }
 }

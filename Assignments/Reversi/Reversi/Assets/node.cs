@@ -19,12 +19,20 @@ namespace Assets
         public Player state;
         public Node parent;
         public ArrayList children;
+        public int row;
+        public int col;
+        public int numBlack;
+        public int numWhite;
 
-        public Node(Player state, Node parent)
+        public Node(Player state, int row, int col, Node parent)
         {
             this.state = state;
+            this.row = row;
+            this.col = col;
             this.parent = parent;
             children = new ArrayList();
+            numBlack = 0;
+            numWhite = 0;
         }
 
         public void addChild(Node child)
