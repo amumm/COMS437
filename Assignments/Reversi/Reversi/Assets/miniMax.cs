@@ -187,7 +187,7 @@ namespace Assets
         public static StateNode minMaxRec(bool isMaximizer, StateNode root, int currentDepth, int maxDepth)
         {
             // Break recursion if a leaf node is reached
-            if (currentDepth == maxDepth)
+            if (currentDepth == maxDepth || root.children.Capacity == 0)
                 return root;
 
             ArrayList childResults = new ArrayList();

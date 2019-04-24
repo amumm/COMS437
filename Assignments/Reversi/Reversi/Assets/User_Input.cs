@@ -59,11 +59,13 @@ public class User_Input : MonoBehaviour
         else if (!playersTurn && timeBetween > waitTime)
         {
             StateNode[,] board = MiniMax.createNodeBoard(pieces);
-            StateNode bestMove = MiniMax.minMax(board, 1);
+            StateNode bestMove = MiniMax.minMax(board, 2);
             if (bestMove != null)
                 tryPlacePiece(bestMove.row, bestMove.col);
             else
                 playersTurn = !playersTurn;
+
+            timeBetween = 0f;
         }
 
 
