@@ -12,6 +12,9 @@ namespace Assets
     {
         private static Move canPlacePiece(StateNode[,] board, int row, int col, Player player)
         {
+            if (board[row, col] != null)
+                return null;
+
             Player checkSide;
             if (player == Player.black)
                 checkSide = Player.white;
@@ -190,7 +193,7 @@ namespace Assets
             ArrayList childResults = new ArrayList();
             foreach(StateNode child in root.children)
             {
-                StateNode childResult = minMaxRec(!isMaximizer, child, currentDepth++, maxDepth);
+                StateNode childResult = minMaxRec(!isMaximizer, child, currentDepth + 1, maxDepth);
                 childResults.Add(childResult);
             }
 

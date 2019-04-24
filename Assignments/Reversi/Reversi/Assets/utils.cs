@@ -15,10 +15,12 @@ namespace Assets
 
         public static bool checkDirection(StateNode[,] board, int row, int col, int x, int z, Player player)
         {
-            if (!isInBounds(row + z, col + x))
+            row += z;
+            col += x;
+            if (!isInBounds(row, col))
                 return false;
 
-            StateNode cur = board[row + z, col + x];
+            var cur = board[row, col];
             if (cur == null)
                 return false;
 
@@ -26,10 +28,10 @@ namespace Assets
             while (cur.state == player)
             {
                 foundOppositeColor = true;
-                x += x;
-                z += z;
-                if (isInBounds(row + z, col + x))
-                    cur = board[row + z, col + x];
+                row += z;
+                col += x;
+                if (isInBounds(row, col))
+                    cur = board[row, col];
                 else
                     return false;
 
@@ -41,20 +43,22 @@ namespace Assets
 
         public static StateNode[,] flipDirection(StateNode[,] board, int row, int col, int x, int z, Player player)
         {
-            if (!isInBounds(row + z, col + x))
+            row += z;
+            col += x;
+            if (!isInBounds(row, col))
                 return board;
 
-            StateNode cur = board[row + z, col + x];
+            StateNode cur = board[row, col];
             if (cur == null)
                 return board;
 
             while (cur.state != player)
             {
                 cur.state = player;
-                x += x;
-                z += z;
-                if (isInBounds(row + z, col + x))
-                    cur = board[row + z, col + x];
+                row += z;
+                col += x;
+                if (isInBounds(row, col))
+                    cur = board[row, col];
                 else
                     return board;
 

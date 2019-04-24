@@ -16,6 +16,9 @@ public class User_Input : MonoBehaviour
     private Vector3 whiteOrientation = new Vector3(0, 0, 0);
     private PieceNode[,] pieces;
 
+    private float waitTime = 2f;
+    private float timeBetween = 0f;
+
     private bool playersTurn = true;
 
     // Start is called before the first frame update
@@ -37,7 +40,9 @@ public class User_Input : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        timeBetween += Time.deltaTime;
         if (Input.GetMouseButtonDown(0) && playersTurn)
+            //if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -49,9 +54,12 @@ public class User_Input : MonoBehaviour
                     getCell(hit.point);
                 }
             }
-        } else if (!playersTurn) {
+            timeBetween = 0f;
+        }
+        else if (!playersTurn && timeBetween > waitTime)
+        {
             StateNode[,] board = MiniMax.createNodeBoard(pieces);
-            StateNode bestMove = MiniMax.minMax(board, 2);
+            StateNode bestMove = MiniMax.minMax(board, 1);
             if (bestMove != null)
                 tryPlacePiece(bestMove.row, bestMove.col);
             else
@@ -61,7 +69,7 @@ public class User_Input : MonoBehaviour
 
     }
 
-    void getCell(Vector3 point)
+        void getCell(Vector3 point)
     {
         int row = (int)(point.z / -1.0f);
         int col = (int)(point.x / 1.0f);
@@ -131,43 +139,44 @@ public class User_Input : MonoBehaviour
 
     bool checkDirection(int row, int col, int x, int z, Player opponent)
     {
-        if (!utils.isInBounds(row + z, col + x))
+        row += z;
+        col += x;
+        if (!utils.isInBounds(row, col))
             return false;
 
-        PieceNode cur = pieces[row + z, col + x];
+        var cur = pieces[row, col];
         if (cur == null)
             return false;
 
         bool foundOppositeColor = false;
-        var state = cur.state;
-        while(state == opponent)
+        while(cur.state == opponent)
         {
             foundOppositeColor = true;
-            x += x;
-            z += z;
-            if (utils.isInBounds(row + z, col + x))
-                cur = pieces[row + z, col + x];
+            row += z;
+            col += x;
+            if (utils.isInBounds(row, col))
+                cur = pieces[row, col];
             else
                 return false;
 
             if (cur == null)
                 return false;
-            state = cur.state;
         }
         return foundOppositeColor;
     }
 
     void flipDirection(int row, int col, int x, int z, Player opponent)
     {
-        if (!utils.isInBounds(row + z, col + x))
+        row += z;
+        col += x;
+        if (!utils.isInBounds(row, col))
             return;
 
-        PieceNode cur = pieces[row + z, col + x];
+        PieceNode cur = pieces[row, col];
         if (cur == null)
             return;
 
-        var state = cur.state;
-        while (state == opponent)
+        while (cur.state == opponent)
         {
             Animator animator = cur.gameObject.GetComponent<Animator>();
             if (playersTurn)
@@ -180,16 +189,15 @@ public class User_Input : MonoBehaviour
                 animator.SetTrigger("flipBlackToWhite");
             }
 
-            x += x;
-            z += z;
-            if (utils.isInBounds(row + z, col + x))
-                cur = pieces[row + z, col + x];
+            row += z;
+            col += x;
+            if (utils.isInBounds(row, col))
+                cur = pieces[row, col];
             else
                 return;
 
             if (cur == null)
                 return;
-            state = cur.state;
         }
     }
 
