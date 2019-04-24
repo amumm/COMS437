@@ -14,19 +14,24 @@ public class User_Input : MonoBehaviour
     private const float baseTileHeight = 1.1f;
     private Vector3 blackOrientation = new Vector3(0, 0, 180);
     private Vector3 whiteOrientation = new Vector3(0, 0, 0);
-    private GameObject[,] pieces;
+    private PieceNode[,] pieces;
 
     private bool playersTurn = true;
 
     // Start is called before the first frame update
     void Start()
     {
-        pieces = new GameObject[numberOfRows, numberOfColumns];
+        pieces = new PieceNode[numberOfRows, numberOfColumns];
+        
+        var gameObject1 = Instantiate(blackPiece, new Vector3(3.5f, baseTileHeight, -3.5f), Quaternion.Euler(blackOrientation));
+        var gameObject2 = Instantiate(whitePiece, new Vector3(4.5f, baseTileHeight, -3.5f), Quaternion.Euler(whiteOrientation));
+        var gameObject3 = Instantiate(whitePiece, new Vector3(3.5f, baseTileHeight, -4.5f), Quaternion.Euler(whiteOrientation));
+        var gameObject4 = Instantiate(blackPiece, new Vector3(4.5f, baseTileHeight, -4.5f), Quaternion.Euler(blackOrientation));
 
-        pieces[3, 3] = Instantiate(blackPiece, new Vector3(3.5f, baseTileHeight, -3.5f), Quaternion.Euler(blackOrientation));
-        pieces[3, 4] = Instantiate(whitePiece, new Vector3(4.5f, baseTileHeight, -3.5f), Quaternion.Euler(whiteOrientation));
-        pieces[4, 3] = Instantiate(whitePiece, new Vector3(3.5f, baseTileHeight, -4.5f), Quaternion.Euler(whiteOrientation));
-        pieces[4, 4] = Instantiate(blackPiece, new Vector3(4.5f, baseTileHeight, -4.5f), Quaternion.Euler(blackOrientation));
+        pieces[3, 3] = new PieceNode(Player.black, 3, 3, gameObject1);
+        pieces[3, 4] = new PieceNode(Player.white, 3, 4, gameObject2);
+        pieces[4, 3] = new PieceNode(Player.white, 4, 3, gameObject3);
+        pieces[4, 4] = new PieceNode(Player.black, 4, 4, gameObject4);
     }
 
     // Update is called once per frame
@@ -44,13 +49,13 @@ public class User_Input : MonoBehaviour
                     getCell(hit.point);
                 }
             }
-        }
-
-        if (!playersTurn)
-        {
-            Node[,] board = MiniMax.createNodeBoard(pieces);
-            Node bestMove = MiniMax.minMax(board, 1);
-            tryPlacePiece(bestMove.row, bestMove.col);
+        } else if (!playersTurn) {
+            StateNode[,] board = MiniMax.createNodeBoard(pieces);
+            StateNode bestMove = MiniMax.minMax(board, 2);
+            if (bestMove != null)
+                tryPlacePiece(bestMove.row, bestMove.col);
+            else
+                playersTurn = !playersTurn;
         }
 
 
@@ -71,64 +76,71 @@ public class User_Input : MonoBehaviour
     {
         bool didPlacePiece = false;
 
-        Func<float, bool> checkSide;
+        Player opponent;
         if (playersTurn)
-            checkSide = angle => angle > -1 && angle < 1;
-        else
-            checkSide = angle => angle > 179 && angle < 181;
+        {
+            opponent = Player.white;
+        } else {
+            opponent = Player.black;
+        }
 
-        bool flipTopLeft = checkDirection(row, col, -1, -1, checkSide);
-        bool flipTop = checkDirection(row, col, 0, -1, checkSide);
-        bool flipTopRight = checkDirection(row, col, 1, -1, checkSide);
-        bool flipLeft = checkDirection(row, col, -1, 0, checkSide);
-        bool flipRight = checkDirection(row, col, 1, 0, checkSide);
-        bool flipBottomLeft = checkDirection(row, col, -1, 1, checkSide);
-        bool flipBottom = checkDirection(row, col, 0, 1, checkSide);
-        bool flipBottomRight = checkDirection(row, col, 1, 1, checkSide);
+        bool flipTopLeft = checkDirection(row, col, -1, -1, opponent);
+        bool flipTop = checkDirection(row, col, 0, -1, opponent);
+        bool flipTopRight = checkDirection(row, col, 1, -1, opponent);
+        bool flipLeft = checkDirection(row, col, -1, 0, opponent);
+        bool flipRight = checkDirection(row, col, 1, 0, opponent);
+        bool flipBottomLeft = checkDirection(row, col, -1, 1, opponent);
+        bool flipBottom = checkDirection(row, col, 0, 1, opponent);
+        bool flipBottomRight = checkDirection(row, col, 1, 1, opponent);
 
         if (flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight)
         {
             if (playersTurn)
-                pieces[row, col] = Instantiate(blackPiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
-            else
-                pieces[row, col] = Instantiate(whitePiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(whiteOrientation));
+            {
+                var gameObject = Instantiate(blackPiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(blackOrientation));
+                pieces[row, col] = new PieceNode(Player.black, row, col, gameObject);
+
+            } else {
+                var gameObject = Instantiate(whitePiece, new Vector3(col + 0.5f, baseTileHeight, -row - 0.5f), Quaternion.Euler(whiteOrientation));
+                pieces[row, col] = new PieceNode(Player.white, row, col, gameObject);
+            }
 
             didPlacePiece = true;
         }
 
         if (flipTopLeft)
-            flipDirection(row, col, -1, -1, checkSide);
+            flipDirection(row, col, -1, -1, opponent);
         if (flipTop)
-            flipDirection(row, col, 0, -1, checkSide);
+            flipDirection(row, col, 0, -1, opponent);
         if (flipTopRight)
-            flipDirection(row, col, 1, -1, checkSide);
+            flipDirection(row, col, 1, -1, opponent);
         if (flipLeft)
-            flipDirection(row, col, -1, 0, checkSide);
+            flipDirection(row, col, -1, 0, opponent);
         if (flipRight)
-            flipDirection(row, col, 1, 0, checkSide);
+            flipDirection(row, col, 1, 0, opponent);
         if (flipBottomLeft)
-            flipDirection(row, col, -1, 1, checkSide);
+            flipDirection(row, col, -1, 1, opponent);
         if (flipBottom)
-            flipDirection(row, col, 0, 1, checkSide);
+            flipDirection(row, col, 0, 1, opponent);
         if (flipBottomRight)
-            flipDirection(row, col, 1, 1, checkSide);
+            flipDirection(row, col, 1, 1, opponent);
 
         if (didPlacePiece)
             playersTurn = !playersTurn;
     }
 
-    bool checkDirection(int row, int col, int x, int z, Func<float, bool> checkSide)
+    bool checkDirection(int row, int col, int x, int z, Player opponent)
     {
         if (!utils.isInBounds(row + z, col + x))
             return false;
 
-        GameObject cur = pieces[row + z, col + x];
+        PieceNode cur = pieces[row + z, col + x];
         if (cur == null)
             return false;
 
         bool foundOppositeColor = false;
-        var rotation = cur.transform.eulerAngles;
-        while(checkSide(rotation.z))
+        var state = cur.state;
+        while(state == opponent)
         {
             foundOppositeColor = true;
             x += x;
@@ -140,29 +152,33 @@ public class User_Input : MonoBehaviour
 
             if (cur == null)
                 return false;
-            rotation = cur.transform.eulerAngles;
+            state = cur.state;
         }
         return foundOppositeColor;
     }
 
-    void flipDirection(int row, int col, int x, int z, Func<float, bool> checkSide)
+    void flipDirection(int row, int col, int x, int z, Player opponent)
     {
         if (!utils.isInBounds(row + z, col + x))
             return;
 
-        GameObject cur = pieces[row + z, col + x];
+        PieceNode cur = pieces[row + z, col + x];
         if (cur == null)
             return;
 
-        var rotation = cur.transform.eulerAngles;
-        while (checkSide(rotation.z))
+        var state = cur.state;
+        while (state == opponent)
         {
-            Animator animator = cur.GetComponent<Animator>();
+            Animator animator = cur.gameObject.GetComponent<Animator>();
             if (playersTurn)
+            {
+                cur.state = Player.black;
                 animator.SetTrigger("flipWhiteToBlack");
-            else
-                //animator.SetTrigger("flipWhiteToBlack");
+            }
+            else {
+                cur.state = Player.white;
                 animator.SetTrigger("flipBlackToWhite");
+            }
 
             x += x;
             z += z;
@@ -173,7 +189,7 @@ public class User_Input : MonoBehaviour
 
             if (cur == null)
                 return;
-            rotation = cur.transform.eulerAngles;
+            state = cur.state;
         }
     }
 

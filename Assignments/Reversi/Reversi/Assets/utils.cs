@@ -13,12 +13,12 @@ namespace Assets
             return row >= 0 && row < 8 && col >= 0 && col < 8;
         }
 
-        public static bool checkDirection(Node[,] board, int row, int col, int x, int z, Player player)
+        public static bool checkDirection(StateNode[,] board, int row, int col, int x, int z, Player player)
         {
             if (!isInBounds(row + z, col + x))
                 return false;
 
-            Node cur = board[row + z, col + x];
+            StateNode cur = board[row + z, col + x];
             if (cur == null)
                 return false;
 
@@ -39,12 +39,12 @@ namespace Assets
             return foundOppositeColor;
         }
 
-        public static Node[,] flipDirection(Node[,] board, int row, int col, int x, int z, Player player)
+        public static StateNode[,] flipDirection(StateNode[,] board, int row, int col, int x, int z, Player player)
         {
             if (!isInBounds(row + z, col + x))
                 return board;
 
-            Node cur = board[row + z, col + x];
+            StateNode cur = board[row + z, col + x];
             if (cur == null)
                 return board;
 

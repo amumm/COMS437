@@ -10,7 +10,7 @@ namespace Assets
 {
     public static class MiniMax
     {
-        private static Move canPlacePiece(Node[,] board, int row, int col, Player player)
+        private static Move canPlacePiece(StateNode[,] board, int row, int col, Player player)
         {
             Player checkSide;
             if (player == Player.black)
@@ -43,7 +43,7 @@ namespace Assets
 
             return move;
         }
-        private static ArrayList findMoves(Node[,] board, Player player)
+        private static ArrayList findMoves(StateNode[,] board, Player player)
         {
             ArrayList availableMoves = new ArrayList();
             for (int x = 0; x < board.GetLength(0); x++)
@@ -59,7 +59,7 @@ namespace Assets
             return availableMoves;
         }
 
-        private static Node[,] flipPieces(Node[,] board, Move move)
+        private static StateNode[,] flipPieces(StateNode[,] board, Move move)
         {
             if (move.flipTopLeft)
                 utils.flipDirection(board, move.row, move.col, -1, -1, move.player);
@@ -81,34 +81,34 @@ namespace Assets
             return board;
         }
 
-        public static Node simulateMoves(Node[,] board, int maxDepth)
+        public static StateNode simulateMoves(StateNode[,] board, int maxDepth)
         {
             int currentDepth = 0;
 
             ArrayList moves = findMoves(board, Player.white);
 
-            Node root = null;
+            StateNode root = null;
             if (moves.Capacity > 0)
             {
-                root = new Node(Player.white, -1, -1, null);
+                root = new StateNode(Player.white, -1, -1, null);
                 simulateMovesRec(root, moves, board, maxDepth, currentDepth);
             }
             return root;
         }
 
-        private static void simulateMovesRec(Node root, ArrayList moves, Node[,] board, int maxDepth, int depth)
+        private static void simulateMovesRec(StateNode root, ArrayList moves, StateNode[,] board, int maxDepth, int depth)
         {
-            if (++depth >= maxDepth)
+            if (++depth > maxDepth)
             {
                 setScore(root, board);
                 return;
             }
             foreach(Move move in moves){
                 // Set up a parent and child relationship with the nodes.
-                Node child = new Node(move.player, move.row, move.col, root);
+                StateNode child = new StateNode(move.player, move.row, move.col, root);
                 root.addChild(child);
 
-                Node[,] tempBoard = new Node[8, 8];
+                StateNode[,] tempBoard = new StateNode[8, 8];
                 for (int x = 0; x < 8; x++)
                 {
                     for (int y = 0; y < 8; y++)
@@ -139,7 +139,7 @@ namespace Assets
             }
         }
 
-        public static void setScore(Node node, Node[,] board)
+        public static void setScore(StateNode node, StateNode[,] board)
         {
             for (int x = 0; x < 8; x++)
             {
@@ -155,51 +155,42 @@ namespace Assets
             }
         }
 
-        public static Node[,] createNodeBoard(GameObject[,] pieces)
+        public static StateNode[,] createNodeBoard(PieceNode[,] pieces)
         {
-            Node[,] board = new Node[8, 8];
+            StateNode[,] board = new StateNode[8, 8];
             for (int x = 0; x < 8; x++)
             {
                 for (int y = 0; y < 8; y++)
                 {
-                    GameObject piece = pieces[x, y];
+                    PieceNode piece = pieces[x, y];
                     if (piece == null)
                         continue;
 
-                    Player player;
-                    var rotation = piece.transform.eulerAngles.z;
-                    if (rotation > -1 && rotation < 1)
-                    {
-                        player = Player.white;
-                    } else { 
-                        player = Player.black;
-                    }
-
-                    board[x, y] = new Node(player, x, y, null);
+                    board[x, y] = new StateNode(piece.state, x, y, null);
                 }
             }
             return board;
         }
 
-        public static Node minMax(Node[,] board, int maxDepth)
+        public static StateNode minMax(StateNode[,] board, int maxDepth)
         {
-            Node root = simulateMoves(board, maxDepth);
+            StateNode root = simulateMoves(board, maxDepth);
             if (root == null)
                 return root;
 
             return minMaxRec(true, root, 0, maxDepth);
         }
 
-        public static Node minMaxRec(bool isMaximizer, Node root, int currentDepth, int maxDepth)
+        public static StateNode minMaxRec(bool isMaximizer, StateNode root, int currentDepth, int maxDepth)
         {
             // Break recursion if a leaf node is reached
             if (currentDepth == maxDepth)
                 return root;
 
             ArrayList childResults = new ArrayList();
-            foreach(Node child in root.children)
+            foreach(StateNode child in root.children)
             {
-                Node childResult = minMaxRec(!isMaximizer, child, currentDepth++, maxDepth);
+                StateNode childResult = minMaxRec(!isMaximizer, child, currentDepth++, maxDepth);
                 childResults.Add(childResult);
             }
 
@@ -214,34 +205,34 @@ namespace Assets
 
         }
 
-        public static Node findMax(ArrayList children)
+        public static StateNode findMax(ArrayList children)
         {
-            Node maxNode = null;
+            StateNode maxStateNode = null;
             int max = 0;
-            foreach(Node child in children)
+            foreach(StateNode child in children)
             {
                 if (child.numWhite > max)
                 {
                     max = child.numWhite;
-                    maxNode = child;
+                    maxStateNode = child;
                 }
             }
-            return maxNode;
+            return maxStateNode;
         }
 
-        public static Node findMin(ArrayList children)
+        public static StateNode findMin(ArrayList children)
         {
-            Node minNode = null;
+            StateNode minStateNode = null;
             int min = 64;
-            foreach (Node child in children)
+            foreach (StateNode child in children)
             {
                 if (child.numWhite < min)
                 {
                     min = child.numWhite;
-                    minNode = child;
+                    minStateNode = child;
                 }
             }
-            return minNode;
+            return minStateNode;
         }
     }
 }
