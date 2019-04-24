@@ -80,17 +80,19 @@ namespace Assets
             return board;
         }
 
-        public static void simulateMoves(Node[,] board, int maxDepth)
+        public static Node simulateMoves(Node[,] board, int maxDepth)
         {
             int currentDepth = 0;
 
             ArrayList moves = findMoves(board, Player.white);
 
+            Node root = null;
             if (moves.Capacity > 0)
             {
-                simulateMovesRec(new Node(Player.white, -1, -1, null), moves, board, maxDepth, currentDepth);
+                root = new Node(Player.white, -1, -1, null);
+                simulateMovesRec(root, moves, board, maxDepth, currentDepth);
             }
-            return;
+            return root;
         }
 
         private static void simulateMovesRec(Node root, ArrayList moves, Node[,] board, int maxDepth, int depth)
@@ -152,16 +154,25 @@ namespace Assets
             }
         }
 
-        public static Node minMax(bool isMaximizer, Node root, int currentDepth, int maxDepth)
+        public static Node minMax(Node[,] board, int maxDepth)
         {
-            // Break recursion if a leaf nodd is reached
+            Node root = simulateMoves(board, maxDepth);
+            if (root == null)
+                return root;
+
+            return minMaxRec(true, root, 0, maxDepth);
+        }
+
+        public static Node minMaxRec(bool isMaximizer, Node root, int currentDepth, int maxDepth)
+        {
+            // Break recursion if a leaf node is reached
             if (currentDepth == maxDepth)
                 return root;
 
             ArrayList childResults = new ArrayList();
             foreach(Node child in root.children)
             {
-                Node childResult = minMax(!isMaximizer, child, currentDepth++, maxDepth);
+                Node childResult = minMaxRec(!isMaximizer, child, currentDepth++, maxDepth);
                 childResults.Add(childResult);
             }
 
