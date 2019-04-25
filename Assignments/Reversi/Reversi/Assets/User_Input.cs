@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class User_Input : MonoBehaviour
@@ -19,6 +20,14 @@ public class User_Input : MonoBehaviour
 
     public GameObject scoreTextBlack;
     public GameObject scoreTextWhite;
+
+    private int difficulty;
+    public Button difficultyButton1;
+    public Button difficultyButton2;
+    public Button difficultyButton3;
+    public Button difficultyButton4;
+    public Button difficultyButton5;
+    public GameObject difficultyPanel;
 
     private float waitTime = 2f;
     private float timeBetween = 0f;
@@ -43,6 +52,11 @@ public class User_Input : MonoBehaviour
         scoreTextBlack.GetComponent<Text>().text = "# Black: 2";
         scoreTextWhite.GetComponent<Text>().text = "# White: 2";
 
+        difficultyButton1.onClick.AddListener(delegate { setDifficulty(1); });
+        difficultyButton2.onClick.AddListener(delegate { setDifficulty(2); });
+        difficultyButton3.onClick.AddListener(delegate { setDifficulty(3); });
+        difficultyButton4.onClick.AddListener(delegate { setDifficulty(4); });
+        difficultyButton5.onClick.AddListener(delegate { setDifficulty(5); });
     }
 
     // Update is called once per frame
@@ -52,22 +66,26 @@ public class User_Input : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && playersTurn)
             //if (Input.GetMouseButtonDown(0))
         {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit))
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                if (hit.transform.name == "Board")
+
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit))
                 {
-                    getCell(hit.point);
+                    if (hit.transform.name == "Board")
+                    {
+                        getCell(hit.point);
+                    }
                 }
+                timeBetween = 0f;
             }
-            timeBetween = 0f;
         }
         else if (!playersTurn && timeBetween > waitTime)
         {
             StateNode[,] board = MiniMax.createNodeBoard(pieces);
-            StateNode bestMove = MiniMax.minMax(board, 1);
+            StateNode bestMove = MiniMax.minMax(board, difficulty);
             if (bestMove != null)
             {
                 tryPlacePiece(bestMove.row, bestMove.col);
@@ -78,6 +96,12 @@ public class User_Input : MonoBehaviour
 
             timeBetween = 0f;
         }
+    }
+
+    private void setDifficulty(int difficulty)
+    {
+        this.difficulty = difficulty;
+        difficultyPanel.SetActive(false);
     }
 
     void setScore()
