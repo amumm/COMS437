@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class User_Input : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class User_Input : MonoBehaviour
     private Vector3 blackOrientation = new Vector3(0, 0, 180);
     private Vector3 whiteOrientation = new Vector3(0, 0, 0);
     private PieceNode[,] pieces;
+
+    public GameObject scoreTextBlack;
+    public GameObject scoreTextWhite;
 
     private float waitTime = 2f;
     private float timeBetween = 0f;
@@ -35,6 +39,10 @@ public class User_Input : MonoBehaviour
         pieces[3, 4] = new PieceNode(Player.white, 3, 4, gameObject2);
         pieces[4, 3] = new PieceNode(Player.white, 4, 3, gameObject3);
         pieces[4, 4] = new PieceNode(Player.black, 4, 4, gameObject4);
+
+        scoreTextBlack.GetComponent<Text>().text = "# Black: 2";
+        scoreTextWhite.GetComponent<Text>().text = "# White: 2";
+
     }
 
     // Update is called once per frame
@@ -59,7 +67,7 @@ public class User_Input : MonoBehaviour
         else if (!playersTurn && timeBetween > waitTime)
         {
             StateNode[,] board = MiniMax.createNodeBoard(pieces);
-            StateNode bestMove = MiniMax.minMax(board, 2);
+            StateNode bestMove = MiniMax.minMax(board, 1);
             if (bestMove != null)
                 tryPlacePiece(bestMove.row, bestMove.col);
             else
