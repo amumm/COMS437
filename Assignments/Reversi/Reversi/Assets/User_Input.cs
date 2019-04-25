@@ -69,17 +69,36 @@ public class User_Input : MonoBehaviour
             StateNode[,] board = MiniMax.createNodeBoard(pieces);
             StateNode bestMove = MiniMax.minMax(board, 1);
             if (bestMove != null)
+            {
                 tryPlacePiece(bestMove.row, bestMove.col);
+                setScore();
+            }
             else
                 playersTurn = !playersTurn;
 
             timeBetween = 0f;
         }
-
-
     }
 
-        void getCell(Vector3 point)
+    void setScore()
+    {
+        int numBlack = 0;
+        int numWhite = 0;
+        foreach(PieceNode piece in pieces)
+        {
+            if (piece == null)
+                continue;
+            if (piece.state == Player.black)
+                numBlack++;
+            else
+                numWhite++;
+        }
+
+        scoreTextBlack.GetComponent<Text>().text = "# Black: " + numBlack;
+        scoreTextWhite.GetComponent<Text>().text = "# White: " + numWhite;
+    }
+
+    void getCell(Vector3 point)
     {
         int row = (int)(point.z / -1.0f);
         int col = (int)(point.x / 1.0f);
@@ -144,7 +163,10 @@ public class User_Input : MonoBehaviour
             flipDirection(row, col, 1, 1, opponent);
 
         if (didPlacePiece)
+        {
             playersTurn = !playersTurn;
+            setScore();
+        }
     }
 
     bool checkDirection(int row, int col, int x, int z, Player opponent)
