@@ -34,6 +34,9 @@ public class User_Input : MonoBehaviour
 
     private bool playersTurn = true;
 
+    private bool computerCanMove = true;
+    private bool humanCanMove = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,37 +65,47 @@ public class User_Input : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        timeBetween += Time.deltaTime;
-        if (Input.GetMouseButtonDown(0) && playersTurn)
-            //if (Input.GetMouseButtonDown(0))
+        // Game Over
+        if (!computerCanMove && !humanCanMove)
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
-            {
-
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(ray, out hit))
-                {
-                    if (hit.transform.name == "Board")
-                    {
-                        getCell(hit.point);
-                    }
-                }
-                timeBetween = 0f;
-            }
+            Debug.Log("Game Over");
+            return;
         }
-        else if (!playersTurn && timeBetween > waitTime)
+
+        timeBetween += Time.deltaTime;
+        if (playersTurn && timeBetween > waitTime)
         {
-            StateNode[,] board = MiniMax.createNodeBoard(pieces);
+            if (humanHasMoves())
+            {
+                if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+                {
+
+                    RaycastHit hit;
+                    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                    if (Physics.Raycast(ray, out hit))
+                    {
+                        if (hit.transform.name == "Board")
+                        {
+                            getCell(hit.point);
+                        }
+                    }
+                    timeBetween = 0f;
+                }
+            }
+        } else if (!playersTurn && timeBetween > waitTime) {
+            StateNode[,] board = utils.createNodeBoard(pieces);
             StateNode bestMove = MiniMax.minMax(board, difficulty);
             if (bestMove != null)
             {
                 tryPlacePiece(bestMove.row, bestMove.col);
                 setScore();
-            }
-            else
+            } else {
+                if (humanHasMoves())
+                    Debug.Log("Computer cannot make a move");
+                computerCanMove = false;
                 playersTurn = !playersTurn;
+            }
 
             timeBetween = 0f;
         }
@@ -131,6 +144,22 @@ public class User_Input : MonoBehaviour
         {
             tryPlacePiece(row, col);
         }
+    }
+
+    bool humanHasMoves()
+    {
+        StateNode[,] board = utils.createNodeBoard(pieces);
+        ArrayList moves = utils.findMoves(board, Player.black);
+        if (moves.Count == 0)
+        {
+            if (computerCanMove && playersTurn)
+                Debug.Log("You cannot make a move");
+            if (playersTurn)
+                playersTurn = false;
+            humanCanMove = false;
+            return false;
+        }
+        return true;
     }
 
     void tryPlacePiece(int row, int col)
@@ -188,6 +217,8 @@ public class User_Input : MonoBehaviour
 
         if (didPlacePiece)
         {
+            computerCanMove = true;
+            humanCanMove = true;
             playersTurn = !playersTurn;
             setScore();
         }

@@ -10,58 +10,6 @@ namespace Assets
 {
     public static class MiniMax
     {
-        private static Move canPlacePiece(StateNode[,] board, int row, int col, Player player)
-        {
-            if (board[row, col] != null)
-                return null;
-
-            Player checkSide;
-            if (player == Player.black)
-                checkSide = Player.white;
-            else
-                checkSide = Player.black;
-
-            bool flipTopLeft = utils.checkDirection(board, row, col, -1, -1, checkSide);
-            bool flipTop = utils.checkDirection(board, row, col, 0, -1, checkSide);
-            bool flipTopRight = utils.checkDirection(board, row, col, 1, -1, checkSide);
-            bool flipLeft = utils.checkDirection(board, row, col, -1, 0, checkSide);
-            bool flipRight = utils.checkDirection(board, row, col, 1, 0, checkSide);
-            bool flipBottomLeft = utils.checkDirection(board, row, col, -1, 1, checkSide);
-            bool flipBottom = utils.checkDirection(board, row, col, 0, 1, checkSide);
-            bool flipBottomRight = utils.checkDirection(board, row, col, 1, 1, checkSide);
-
-            Move move = null;
-            if (flipTopLeft || flipTop || flipTopRight || flipLeft || flipRight || flipBottomLeft || flipBottom || flipBottomRight)
-            {
-                move = new Move(player, row, col);
-                move.flipTopLeft = flipTopLeft;
-                move.flipTop = flipTop;
-                move.flipTopRight = flipTopRight;
-                move.flipLeft = flipLeft;
-                move.flipRight = flipRight;
-                move.flipBottomLeft = flipBottomLeft;
-                move.flipBottom = flipBottom;
-                move.flipBottomRight = flipBottomRight;
-            }
-
-            return move;
-        }
-        private static ArrayList findMoves(StateNode[,] board, Player player)
-        {
-            ArrayList availableMoves = new ArrayList();
-            for (int x = 0; x < board.GetLength(0); x++)
-            {
-                for (int y = 0; y < board.GetLength(1); y++)
-                {
-                    Move move = canPlacePiece(board, x, y, player);
-                    if (move != null)
-                        availableMoves.Add(move);
-                }
-            }
-
-            return availableMoves;
-        }
-
         private static StateNode[,] flipPieces(StateNode[,] board, Move move)
         {
             if (move.flipTopLeft)
@@ -88,10 +36,10 @@ namespace Assets
         {
             int currentDepth = 0;
 
-            ArrayList moves = findMoves(board, Player.white);
+            ArrayList moves = utils.findMoves(board, Player.white);
 
             StateNode root = null;
-            if (moves.Capacity > 0)
+            if (moves.Count > 0)
             {
                 root = new StateNode(Player.white, -1, -1, null);
                 simulateMovesRec(root, moves, board, maxDepth, currentDepth);
@@ -134,8 +82,8 @@ namespace Assets
                 else
                     nextPlayer = Player.black;
 
-                ArrayList tempMoves = findMoves(tempBoard, nextPlayer);
-                if (tempMoves.Capacity > 0)
+                ArrayList tempMoves = utils.findMoves(tempBoard, nextPlayer);
+                if (tempMoves.Count > 0)
                 {
                     simulateMovesRec(child, tempMoves, tempBoard, maxDepth, depth);
                 }
@@ -158,22 +106,7 @@ namespace Assets
             }
         }
 
-        public static StateNode[,] createNodeBoard(PieceNode[,] pieces)
-        {
-            StateNode[,] board = new StateNode[8, 8];
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    PieceNode piece = pieces[x, y];
-                    if (piece == null)
-                        continue;
-
-                    board[x, y] = new StateNode(piece.state, x, y, null);
-                }
-            }
-            return board;
-        }
+        
 
         public static StateNode minMax(StateNode[,] board, int maxDepth)
         {
@@ -187,7 +120,7 @@ namespace Assets
         public static StateNode minMaxRec(bool isMaximizer, StateNode root, int currentDepth, int maxDepth)
         {
             // Break recursion if a leaf node is reached
-            if (currentDepth == maxDepth || root.children.Capacity == 0)
+            if (currentDepth == maxDepth || root.children.Count == 0)
                 return root;
 
             ArrayList childResults = new ArrayList();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Assets
 {
-    class Move
+    public class Move
     {
         public bool flipTopLeft;
         public bool flipTop;
