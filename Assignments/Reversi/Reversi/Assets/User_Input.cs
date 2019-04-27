@@ -36,6 +36,7 @@ public class User_Input : MonoBehaviour
 
     private bool computerCanMove = true;
     private bool humanCanMove = true;
+    private bool gameOver = false;
 
     // Start is called before the first frame update
     void Start()
@@ -66,9 +67,11 @@ public class User_Input : MonoBehaviour
     void Update()
     {
         // Game Over
-        if (!computerCanMove && !humanCanMove)
+        if (!computerCanMove && !humanCanMove && !gameOver)
         {
             Debug.Log("Game Over");
+            gameOver = true;
+            setScore();
             return;
         }
 
@@ -99,7 +102,6 @@ public class User_Input : MonoBehaviour
             if (bestMove != null)
             {
                 tryPlacePiece(bestMove.row, bestMove.col);
-                setScore();
             } else {
                 if (humanHasMoves())
                     Debug.Log("Computer cannot make a move");
@@ -133,6 +135,10 @@ public class User_Input : MonoBehaviour
 
         scoreTextBlack.GetComponent<Text>().text = "# Black: " + numBlack;
         scoreTextWhite.GetComponent<Text>().text = "# White: " + numWhite;
+        if (gameOver)
+        {
+            Debug.Log("# Black: " + numBlack + " # White: " + numWhite);
+        }
     }
 
     void getCell(Vector3 point)
