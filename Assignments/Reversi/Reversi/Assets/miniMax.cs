@@ -42,14 +42,14 @@ namespace Assets
             if (moves.Count > 0)
             {
                 root = new StateNode(Player.white, -1, -1, null);
-                simulateMovesRec(root, moves, board, maxDepth, currentDepth);
+                simulateMovesRec(root, moves, board, maxDepth, currentDepth + 1);
             }
             return root;
         }
 
         private static void simulateMovesRec(StateNode root, ArrayList moves, StateNode[,] board, int maxDepth, int depth)
         {
-            if (++depth > maxDepth)
+            if (depth > maxDepth || moves.Count == 0)
             {
                 setScore(root, board);
                 return;
@@ -85,7 +85,7 @@ namespace Assets
                 ArrayList tempMoves = utils.findMoves(tempBoard, nextPlayer);
                 if (tempMoves.Count > 0)
                 {
-                    simulateMovesRec(child, tempMoves, tempBoard, maxDepth, depth);
+                    simulateMovesRec(child, tempMoves, tempBoard, maxDepth, depth + 1);
                 }
             }
         }
@@ -120,7 +120,7 @@ namespace Assets
         public static StateNode minMaxRec(bool isMaximizer, StateNode root, int currentDepth, int maxDepth)
         {
             // Break recursion if a leaf node is reached
-            if (currentDepth == maxDepth || root.children.Count == 0)
+            if (currentDepth > maxDepth || root.children.Count == 0)
                 return root;
 
             ArrayList childResults = new ArrayList();
