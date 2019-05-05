@@ -1,0 +1,17 @@
+Cy animation instructions
+
+Import the assets into Unity.
+
+Cy-Mesh is the model. For the import settings un-check "Use File Scale", Apply.
+
+Put Cy-Mesh into the scene.
+
+Create a new Material, assign Cy-Texture as the main texture, and assign the material to Cy-Mesh's Skinned Mesh Renderer (drag it on).
+
+Create a new Animation Controller and assign it on the Cy-Mesh Animator component.
+
+Select your Animation Controller and open the Animator window.
+
+Animations are all named mixamo.com by default, note the file path for what the animation is or rename them.
+
+Use Unity's Mechanim to animate the character (plenty of online tutorials).
