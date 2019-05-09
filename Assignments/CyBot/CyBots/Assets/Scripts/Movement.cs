@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Movement : MonoBehaviour
 {
-    public float moveSpeed = 6.0F;
+    public float moveSpeed = 4.0F;
     public float rotationSpeed = 5.0F;
     public float jumpSpeed = 8.0F;
     public float gravity = 20.0F;
@@ -46,8 +46,8 @@ public class Movement : MonoBehaviour
 
         }
         else {
-            moveDirection.x *= 0.96f;
-            moveDirection.z *= 0.96f;
+            moveDirection.x *= 0.995f;
+            moveDirection.z *= 0.995f;
         }
 
         if (turnRight)
