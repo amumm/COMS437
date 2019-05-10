@@ -11,11 +11,9 @@ public class Movement : MonoBehaviour
 
     public CharacterController controller;
 
-    private Quaternion target;
 
     void Start()
     {
-        Quaternion target = Quaternion.Euler(transform.rotation.x, transform.rotation.y, transform.rotation.z);
     }
 
     void Update()
@@ -60,7 +58,6 @@ public class Movement : MonoBehaviour
             transform.Rotate(new Vector3(0, transform.rotation.y + rotationSpeed, 0), 100.0f * Time.deltaTime);
         }
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * 5.0f);
 
         moveDirection.y -= gravity * Time.deltaTime;
 

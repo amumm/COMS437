@@ -16,13 +16,12 @@ public class EndZone : MonoBehaviour
         
     }
 
-    void OnCollisionEnter(Collision col)
+    private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(col);
 
-        if (col.gameObject.name == "prop_powerCube")
+        if (other.name == "Player(Clone)")
         {
-            Destroy(col.gameObject);
+            Debug.Log(other.name);
         }
     }
 }
