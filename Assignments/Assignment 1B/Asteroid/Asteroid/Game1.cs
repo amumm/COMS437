@@ -226,7 +226,7 @@ namespace Asteroid
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //skyboxModel = Content.Load<Model>("skybox");
-            skyboxModel = Content.Load<Model>("skybox_2");
+            skyboxModel = Content.Load<Model>("skybox_3");
         }
 
         /// <summary>

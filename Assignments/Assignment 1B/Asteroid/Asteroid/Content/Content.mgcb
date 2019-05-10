@@ -253,7 +253,7 @@
 /processorParam:TextureFormat=Color
 /build:shipTexture.tga
 
-#begin skybox_2.fbx
+#begin skybox_3.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -270,7 +270,7 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:skybox_2.fbx
+/build:skybox_3.fbx
 
 #begin torpedo.spritefont
 /importer:FontDescriptionImporter

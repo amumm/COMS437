@@ -35,8 +35,8 @@ namespace Asteroid
         private float rotationFuelDepletionRate = 0.01f;
 
         private float rotationSpeed = 0.02f;
-        private float forwardMovementModifier = 60.0f;
-        private float reverseMovementmodifier = -30.0f;
+        private float forwardMovementModifier = 70.0f;
+        private float reverseMovementmodifier = -40.0f;
 
         private SpriteFont healthText;
         private float health = 100.0f;
